@@ -28,9 +28,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CBA76A882CB5BCDF002D1EED /* Houston Public Media.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Houston Public Media.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CBA76A9B2CB5BCE0002D1EED /* Houston Public MediaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Houston Public MediaTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CBA76AA52CB5BCE0002D1EED /* Houston Public MediaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Houston Public MediaUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBA76A882CB5BCDF002D1EED /* HPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HPM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBA76A9B2CB5BCE0002D1EED /* HPMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HPMTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBA76AA52CB5BCE0002D1EED /* HPMUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HPMUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -90,9 +90,9 @@
 		CBA76A892CB5BCDF002D1EED /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CBA76A882CB5BCDF002D1EED /* Houston Public Media.app */,
-				CBA76A9B2CB5BCE0002D1EED /* Houston Public MediaTests.xctest */,
-				CBA76AA52CB5BCE0002D1EED /* Houston Public MediaUITests.xctest */,
+				CBA76A882CB5BCDF002D1EED /* HPM.app */,
+				CBA76A9B2CB5BCE0002D1EED /* HPMTests.xctest */,
+				CBA76AA52CB5BCE0002D1EED /* HPMUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CBA76A872CB5BCDF002D1EED /* Houston Public Media */ = {
+		CBA76A872CB5BCDF002D1EED /* HPM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CBA76AAF2CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public Media" */;
+			buildConfigurationList = CBA76AAF2CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPM" */;
 			buildPhases = (
 				CBA76A842CB5BCDF002D1EED /* Sources */,
 				CBA76A852CB5BCDF002D1EED /* Frameworks */,
@@ -115,17 +115,17 @@
 			fileSystemSynchronizedGroups = (
 				CBA76A8A2CB5BCDF002D1EED /* Houston Public Media */,
 			);
-			name = "Houston Public Media";
+			name = HPM;
 			packageProductDependencies = (
 				CB1F5E9F2CC04A3A0096E4EF /* Blackbird */,
 			);
 			productName = "Houston Public Media";
-			productReference = CBA76A882CB5BCDF002D1EED /* Houston Public Media.app */;
+			productReference = CBA76A882CB5BCDF002D1EED /* HPM.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CBA76A9A2CB5BCE0002D1EED /* Houston Public MediaTests */ = {
+		CBA76A9A2CB5BCE0002D1EED /* HPMTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CBA76AB22CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public MediaTests" */;
+			buildConfigurationList = CBA76AB22CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPMTests" */;
 			buildPhases = (
 				CBA76A972CB5BCE0002D1EED /* Sources */,
 				CBA76A982CB5BCE0002D1EED /* Frameworks */,
@@ -139,16 +139,16 @@
 			fileSystemSynchronizedGroups = (
 				CBA76A9E2CB5BCE0002D1EED /* Houston Public MediaTests */,
 			);
-			name = "Houston Public MediaTests";
+			name = HPMTests;
 			packageProductDependencies = (
 			);
 			productName = "Houston Public MediaTests";
-			productReference = CBA76A9B2CB5BCE0002D1EED /* Houston Public MediaTests.xctest */;
+			productReference = CBA76A9B2CB5BCE0002D1EED /* HPMTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		CBA76AA42CB5BCE0002D1EED /* Houston Public MediaUITests */ = {
+		CBA76AA42CB5BCE0002D1EED /* HPMUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CBA76AB52CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public MediaUITests" */;
+			buildConfigurationList = CBA76AB52CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPMUITests" */;
 			buildPhases = (
 				CBA76AA12CB5BCE0002D1EED /* Sources */,
 				CBA76AA22CB5BCE0002D1EED /* Frameworks */,
@@ -162,11 +162,11 @@
 			fileSystemSynchronizedGroups = (
 				CBA76AA82CB5BCE0002D1EED /* Houston Public MediaUITests */,
 			);
-			name = "Houston Public MediaUITests";
+			name = HPMUITests;
 			packageProductDependencies = (
 			);
 			productName = "Houston Public MediaUITests";
-			productReference = CBA76AA52CB5BCE0002D1EED /* Houston Public MediaUITests.xctest */;
+			productReference = CBA76AA52CB5BCE0002D1EED /* HPMUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -192,7 +192,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CBA76A832CB5BCDF002D1EED /* Build configuration list for PBXProject "Houston Public Media" */;
+			buildConfigurationList = CBA76A832CB5BCDF002D1EED /* Build configuration list for PBXProject "HPM" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -209,9 +209,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CBA76A872CB5BCDF002D1EED /* Houston Public Media */,
-				CBA76A9A2CB5BCE0002D1EED /* Houston Public MediaTests */,
-				CBA76AA42CB5BCE0002D1EED /* Houston Public MediaUITests */,
+				CBA76A872CB5BCDF002D1EED /* HPM */,
+				CBA76A9A2CB5BCE0002D1EED /* HPMTests */,
+				CBA76AA42CB5BCE0002D1EED /* HPMUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -267,12 +267,12 @@
 /* Begin PBXTargetDependency section */
 		CBA76A9D2CB5BCE0002D1EED /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CBA76A872CB5BCDF002D1EED /* Houston Public Media */;
+			target = CBA76A872CB5BCDF002D1EED /* HPM */;
 			targetProxy = CBA76A9C2CB5BCE0002D1EED /* PBXContainerItemProxy */;
 		};
 		CBA76AA72CB5BCE0002D1EED /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CBA76A872CB5BCDF002D1EED /* Houston Public Media */;
+			target = CBA76A872CB5BCDF002D1EED /* HPM */;
 			targetProxy = CBA76AA62CB5BCE0002D1EED /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -497,7 +497,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Houston Public Media.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Houston Public Media";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HPM.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HPM";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
@@ -521,7 +521,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Houston Public Media.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Houston Public Media";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HPM.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HPM";
 				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
@@ -575,7 +575,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CBA76A832CB5BCDF002D1EED /* Build configuration list for PBXProject "Houston Public Media" */ = {
+		CBA76A832CB5BCDF002D1EED /* Build configuration list for PBXProject "HPM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CBA76AAD2CB5BCE0002D1EED /* Debug */,
@@ -584,7 +584,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CBA76AAF2CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public Media" */ = {
+		CBA76AAF2CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CBA76AB02CB5BCE0002D1EED /* Debug */,
@@ -593,7 +593,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CBA76AB22CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public MediaTests" */ = {
+		CBA76AB22CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPMTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CBA76AB32CB5BCE0002D1EED /* Debug */,
@@ -602,7 +602,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CBA76AB52CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "Houston Public MediaUITests" */ = {
+		CBA76AB52CB5BCE0002D1EED /* Build configuration list for PBXNativeTarget "HPMUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CBA76AB62CB5BCE0002D1EED /* Debug */,

@@ -34,18 +34,18 @@ struct LaunchScreenView: View {
     
     @ViewBuilder
     private var image: some View {  // Mark 3
-        Image(systemName: "hurricane")
+		Image(.hpmLogo)
             .resizable()
             .scaledToFit()
-            .frame(width: 100, height: 100)
-            .rotationEffect(firstAnimation ? Angle(degrees: 900) : Angle(degrees: 1800)) // Mark 4
+            .frame(width: 250, height: 250)
+            .scaleEffect(firstAnimation ? 1 : 0) // Mark 4
             .scaleEffect(secondAnimation ? 0 : 1) // Mark 4
             .offset(y: secondAnimation ? 400 : 0) // Mark 4
     }
     
     @ViewBuilder
     private var backgroundColor: some View {  // Mark 3
-        Color.blue.ignoresSafeArea()
+		Color(hue: 0.972, saturation: 0.92, brightness: 0.78, opacity: 1.0).ignoresSafeArea()
     }
     
     private let animationTimer = Timer // Mark 5
@@ -64,8 +64,8 @@ struct LaunchScreenView: View {
     private func updateAnimation() { // Mark 5
         switch launchScreenState.state {  
         case .firstStep:
-            withAnimation(.easeInOut(duration: 0.9)) {
-                firstAnimation.toggle()
+            withAnimation(.linear) {
+				self.firstAnimation = true
             }
         case .secondStep:
             if secondAnimation == false {

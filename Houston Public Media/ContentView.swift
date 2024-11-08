@@ -6,61 +6,155 @@
 //
 
 import SwiftUI
-import SwiftData
+import Blackbird
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+	@EnvironmentObject var hpmData: HpmStationData
+	@EnvironmentObject private var launchScreenState: LaunchScreenStateManager
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
+		VStack {
+			HpmPlayerView().frame(width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.width / 1.77778) + 50)
+			NavigationStack {
+				List {
+					Section(header: Text("Podcasts")) {
+						ForEach(hpmData.podcasts.list, id: \.slug) { podcast in
+							NavigationLink {
+								AsyncImage(url: URL(string: podcast.image.full.url)) { image in
+									image.resizable()
+								} placeholder: {
+									ProgressView()
+								}
+								.frame(width: 250, height: 250)
+								Text(podcast.name).font(.headline).multilineTextAlignment(.leading).padding(5)
+								Text(podcast.description).padding(5)
+							} label: {
+								AsyncImage(url: URL(string: podcast.image.thumbnail.url)) { image in
+									image.resizable()
+								} placeholder: {
+									ProgressView()
+								}
+								.frame(width: 50, height: 50)
+								Text(podcast.name)
+							}
+						}
+					}
+					Section(header: Text("Top Stories")) {
+						ForEach(hpmData.priorityArticles.articles, id: \.id) { article in
+							NavigationLink {
+								AsyncImage(url: URL(string: article.picture)!) { image in
+									image.resizable().aspectRatio(contentMode: .fit)
+								} placeholder: {
+									ProgressView()
+								}
+								.frame(width: 300)
+								Text(article.title).font(.headline)
+								Text(article.excerpt)
+								Text(article.permalink)
+							} label: {
+								AsyncImage(url: URL(string: article.picture)!) { image in
+									image.resizable().aspectRatio(contentMode: .fit)
+								} placeholder: {
+									ProgressView()
+								}
+								.frame(width: 75)
+								Text(article.title)
+							}
+						}
+					}
+				}
+				.navigationTitle("HPM Main")
+			}
+		}
+		.task {
+			await hpmData.jsonPull()
+			try? await Task.sleep(for: Duration.seconds(1))
+			self.launchScreenState.dismiss()
+		}
+	}
 }
+					
+//		NavigationStack {
+//			if streams.didLoad {
+//				List {
+//					Section(header: Text("Streaming Stations")) {
+//						ForEach(streams.results) { stream in
+//							NavigationLink {
+//								AsyncImage(url: URL(string: stream.artwork)) { image in
+//									image.resizable()
+//								} placeholder: {
+//									ProgressView()
+//								}
+//								.frame(width: 250, height: 250)
+//								VideoPlayerView(station: stream).frame(height: 300)
+//							} label: {
+//								AsyncImage(url: URL(string: stream.artwork)) { image in
+//									image.resizable()
+//								} placeholder: {
+//									ProgressView()
+//								}
+//								.frame(width: 50, height: 50)
+//								Text(stream.name)
+//							}
+//						}
+//					}
+					//				Section(header: Text("Podcasts")) {
+					//					ForEach(hpmData.podcasts.list, id: \.slug) { podcast in
+					//						NavigationLink {
+					//							AsyncImage(url: URL(string: podcast.image.full.url)) { image in
+					//								image.resizable()
+					//							} placeholder: {
+					//								ProgressView()
+					//							}
+					//							.frame(width: 250, height: 250)
+					//							Text(podcast.name).font(.headline).multilineTextAlignment(.leading).padding(5)
+					//							Text(podcast.description).padding(5)
+					//						} label: {
+					//							AsyncImage(url: URL(string: podcast.image.thumbnail.url)) { image in
+					//								image.resizable()
+					//							} placeholder: {
+					//								ProgressView()
+					//							}
+					//							.frame(width: 50, height: 50)
+					//							Text(podcast.name)
+					//						}
+					//					}
+					//				}
+					//				Section(header: Text("Top Stories")) {
+					//					ForEach(hpmData.priorityArticles.articles, id: \.id) { article in
+					//						NavigationLink {
+					//							AsyncImage(url: URL(string: article.picture)!) { image in
+					//								image.resizable().aspectRatio(contentMode: .fit)
+					//							} placeholder: {
+					//								ProgressView()
+					//							}
+					//							.frame(width: 300)
+					//							Text(article.title).font(.headline)
+					//							Text(article.excerpt)
+					//							Text(article.permalink)
+					//						} label: {
+					//							AsyncImage(url: URL(string: article.picture)!) { image in
+					//								image.resizable().aspectRatio(contentMode: .fit)
+					//							} placeholder: {
+					//								ProgressView()
+					//							}
+					//							.frame(width: 75)
+					//							Text(article.title)
+					//						}
+					//					}
+					//				}
+//				}
+//				.navigationTitle("HPM Main")
+//			}
+//        }
+//		.task {
+//			//await hpmData.jsonPull()
+//   			try? await Task.sleep(for: Duration.seconds(1))
+//   			self.launchScreenState.dismiss()
+//   		}
+//    }
+//}
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+	ContentView().environmentObject(HpmStationData()).environmentObject(LaunchScreenStateManager())
 }
+
