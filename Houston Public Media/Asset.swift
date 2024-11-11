@@ -22,7 +22,7 @@ class Asset {
         self.url = url
         self.contentKeyIdList = [String]()
         
-        print("Creating Asset with url: \(url)) name: \(name)")
+        print("Creating Asset with url: \(url), name: \(name)")
         
         createUrlAsset()
     }

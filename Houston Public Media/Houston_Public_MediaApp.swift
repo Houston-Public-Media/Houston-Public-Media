@@ -14,7 +14,7 @@ import Blackbird
 struct Houston_Public_MediaApp: App {
 	@StateObject var hpmData = HpmStationData()
 	@StateObject var launchScreenState = LaunchScreenStateManager()
-	let database = try! Blackbird.Database(path: Bundle.main.path(forResource: "HpmData", ofType: "sqlite")!)
+	let database = try! Blackbird.Database(path: prepareDatabaseFile())
     var body: some Scene {
         WindowGroup {
 			ZStack {
@@ -46,4 +46,30 @@ extension URLSession {
 		let decoded = try decoder.decode(T.self, from: data)
 		return decoded
 	}
+}
+
+func prepareDatabaseFile() -> String {
+	let fileName: String = "HpmData.sqlite"
+
+	let fileManager:FileManager = FileManager.default
+	let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+
+	let documentUrl = directory.appendingPathComponent(fileName)
+	let bundleUrl = Bundle.main.resourceURL?.appendingPathComponent(fileName)
+
+	// here check if file already exists on simulator
+	if fileManager.fileExists(atPath: (documentUrl.path)) {
+		print("document file exists!")
+		return documentUrl.path
+	} else if fileManager.fileExists(atPath: (bundleUrl?.path)!) {
+		print("document file does not exist, copy from bundle!")
+		do {
+			try fileManager.copyItem(at:bundleUrl!, to:documentUrl)
+		} catch {
+			print("error copying file from bundle: \(error)")
+		}
+		
+	}
+
+	return documentUrl.path
 }

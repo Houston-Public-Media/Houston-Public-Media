@@ -10,14 +10,15 @@ import SwiftUI
 import Blackbird
 
 struct HpmPlayerView: View {
-	@BlackbirdLiveModels({ try await Streams.read(from: $0, orderBy: .ascending(\.$id)) }) var streams
+	@BlackbirdLiveModels({ try await Streams.read(from: $0, matching: \.$type == "audio", orderBy: .ascending(\.$id)) }) var streams
 	@State private var selection = 0
 	var body: some View {
 		if streams.didLoad {
 			VStack {
 				VideoPlayerView(streams: streams.results, stationId: $selection).frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width / 1.777778)
 				HStack {
-					Image(systemName: "play")
+					Image(systemName: "play.fill")
+					Spacer()
 					Picker("Select Station", selection: $selection) {
 						ForEach(streams.results) { stream in
 							HStack {
