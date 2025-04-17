@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en-US">
+	<head>
+		<meta charset="UTF-8">
+		<title>Watch Live &#8211; Houston Public Media</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<style>
+			/* Variables */
+			:root {
+				--hpm-font-main: -apple-system, BlinkMacSystemFont, sans-serif;
+				--max-width: 75rem;
+				--base: #404040;
+				--primary: #237bbd;
+				--secondary: #222054;
+				--white: #ffffff;
+				--black: #000000;
+				--gray: #535353;
+				--gray1: #bebdbd;
+				--gray2: #cccccc;
+				--lightBlue: #14b0bc;
+				color-scheme: light dark;
+			}
+			html {
+				--main-red: #C8102E;
+				--main-black: #000000;
+				--main-blue: #237bbd;
+				--main-white: #FFFFFF;
+				--main-background: light-dark( var(--main-white), var(--main-black));
+				--main-headline: light-dark(var(--accent-black-1),  var(--main-white));
+				--main-text: light-dark(var(--main-black), var(--main-white));
+				--secondary-text: light-dark(#757575, #D6D6D6);
+				--main-element-background: light-dark(var(--main-white), var(--main-black));
+				--accent-black-1: #404040;
+				--accent-black-2: #808080;
+				--accent-black-3: #BFBFBF;
+				--accent-black-4: #E5E5E5;
+				--accent-red-1: #6E091A;
+				--accent-red-2: #A40E26;
+				--accent-red-3: #F0BDC6;
+				--accent-red-4: #FAE9EC;
+				--accent-light-blue-1: #14B0BC;
+				--accent-light-blue-2: #4FC4CD;
+				--accent-light-blue-3: #89D7DD;
+				--accent-light-blue-4: #C4EBEE;
+				--accent-light-blue-5: #E7F7F8;
+				--accent-dark-blue-1: #00566C;
+				--accent-dark-blue-2: #408091;
+				--accent-dark-blue-3: #7FAAB5;
+				--accent-dark-blue-4: #BFD5DA;
+				--accent-dark-blue-5: #E5EEF0;
+				--accent-green-1: #A9CF38;
+				--accent-green-2: #BFDB6A;
+				--accent-green-3: #D4E79B;
+				--accent-green-4: #E9F3CD;
+				--accent-green-5: #F6FAEB;
+				--accent-yellow-1: #FFCE16;
+				--accent-yellow-2: #FFD863;
+				--accent-yellow-3: #FFE496;
+				--accent-yellow-4: #FFEFC8;
+				--accent-yellow-5: #FFF7E6;
+				--accent-blue-1: #222054;
+				--accent-skyblue-1: #237bbd;
+				--accent-skyblue-2: #3988c4;
+			}
+
+			/* Reset */
+			*, *::before, *::after {
+				box-sizing: border-box;
+			}
+			body, h1, h2, h3, h4, p, figure, blockquote, dl, dd {
+				margin: 0;
+			}
+			ul[role=list], ol[role=list] {
+				list-style: none;
+			}
+			ul li, ol li {
+				color: var(--main-text);
+			}
+			html:focus-within {
+				scroll-behavior: smooth;
+			}
+			a:not([class]) {
+				text-decoration-skip-ink: auto;
+			}
+			img, picture {
+				max-width: 100%;
+				display: block;
+				height: auto;
+				outline: none;
+			}
+			body {
+				font-weight: 400;
+				font-size: 16px;
+				font-family: var(--hpm-font-main);
+				background-color: var(--main-background);
+				accent-color: var(--main-red);
+				text-rendering: optimizeSpeed;
+				line-height: 1.25;
+				width: 100%;
+			}
+			#page {
+				width: 100%;
+			}
+			#main {
+				background: transparent;
+				padding: 0;
+				overflow: hidden;
+			}
+			#content {
+				position: relative;
+				max-width: var(--max-width);
+				margin: 0 auto;
+			}
+			a {
+				text-decoration: underline;
+				color: var(--main-blue);
+			}
+			a:hover {
+				opacity: 0.75;
+				transition: opacity 0.2s ease-out;
+				text-decoration: underline;
+				color: var(--primary);
+			}
+			a:focus {
+				outline: 2px solid rgba(51, 51, 51, 0.3);
+			}
+			a:hover, a:active {
+				outline: 0;
+			}
+			h1, h2, h3, h4 {
+				color: var(--main-text);
+				font-weight: 700;
+			}
+			h1 {
+				font-size: 2.2rem;
+			}
+			h2 {
+				font-size: 1.25em;
+			}
+			h3 {
+				font-size: 1.13rem;
+			}
+			h4 {
+				font-size: 1rem;
+			}
+			h5 {
+				font-size: 0.8rem;
+			}
+			:is(h1,h2) a {
+				color: var(--main-headline);
+				font-weight: bold !important;
+			}
+			p {
+				color: var(--main-text);
+				font-weight: 400;
+				font-size: 1em;
+				line-height: 1.375;
+			}
+
+			/* iFrame Sizing */
+			.iframe-embed {
+				position: relative;
+				width: 100%;
+				padding: 0 !important;
+				padding-bottom: calc(100% / 1.777778) !important;
+				display: block;
+				margin-bottom: 1em;
+				iframe {
+					display: block;
+					top: 0;
+					left: 0;
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					border: 0;
+				}
+			}
+			
+			.player-wrap {
+				background-color: var(--main-element-background);
+				padding: 0.5em;
+				overflow: hidden;
+				h3 {
+					font: 700 1.125rem/1rem var(--hpm-font-main);
+					color: var(--secondary-text);
+					text-transform: uppercase;
+				}
+			}
+			#main > article {
+				width: 100%;
+				border: 0;
+				padding: 0;
+				margin: 0;
+			}
+			body.page-template-page-listen article .entry-content {
+				padding: 0.5rem 0;
+			}
+			.nowplay-display {
+				display: grid;
+				grid-template-columns: 10rem auto;
+				align-items: center;
+				gap: 1rem;
+				padding-top: 1rem;
+				p {
+					text-align: right;
+				}
+			}
+			#primary {
+				max-width: 60rem;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body class="page-template page-template-page-listen page-template-page-listen-php page page-id-385437 watch-tv">
+		<div id="page" class="hfeed site">
+			<div id="content" class="site-content">
+				<div id="primary" class="content-area">
+					<main id="main" class="site-main" role="main">
+						<article id="post-385437" class="post-385437 page type-page status-publish hentry">
+							<div class="entry-content">
+								<div id="nowplay">
+									<div id="np-main" class="player-wrap">
+										<p class="iframe-embed"><iframe width="560" height="315" style="aspect-ratio:16/9; width:100%;" src="https://player.pbs.org/ga-livestream-partnerplayer/?station_id=a0c19534-b8cd-4d9f-8856-442a473c4aff&feed_cid=623006be-27ab-40ab-aea7-208777d02ab1" allow="geolocation; encrypted-media; fullscreen; picture-in-picture" allowfullscreen class="livestream-player__iframe" frameborder="0"></iframe></p>
+										<h2>Now Playing:</h2>
+										<div class="nowplay-display">
+											<p>TV 8.1</p><div class="hpm-nowplay" data-station="tv81" data-upnext="false"></div>
+											<p>NHK World Japan</p><div class="hpm-nowplay" data-station="tv84" data-upnext="false"></div>
+											<p>World</p><div class="hpm-nowplay" data-station="tv86" data-upnext="false"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</article>
+					</main>
+				</div>
+			</div>
+		</div>
+		<script>
+
+			let hpm = {};
+
+			hpm.stationIds = {
+				'tv81': {
+					'nowPlaying': {},
+					'refresh': false,
+					'obj': {}
+				},
+				'tv82': {
+					'nowPlaying': {},
+					'refresh': false,
+					'obj': {}
+				},
+				'tv83': {
+					'nowPlaying': {},
+					'refresh': false,
+					'obj': {}
+				},
+				'tv84': {
+					'nowPlaying': {},
+					'refresh': false,
+					'obj': {}
+				},
+				'tv86': {
+					'nowPlaying': {},
+					'refresh': false,
+					'obj': {}
+				}
+			};
+			hpm.npSearch = () => {
+				let nowPlay = document.querySelectorAll('.hpm-nowplay');
+				Array.from(nowPlay).forEach((np) => {
+					let station = np.getAttribute('data-station');
+					if (station !== null ) {
+						hpm.stationIds[ station ].refresh = true;
+						hpm.stationIds[ station ].obj = np;
+					}
+				});
+				hpm.npDataDownload();
+				setInterval('hpm.npDataDownload()',60000);
+			};
+			hpm.npDataDownload = () => {
+				fetch('https://s3-us-west-2.amazonaws.com/hpmwebv2/assets/nowplay/all.json')
+				.then((response) => response.json())
+				.then((data) => {
+					Array.from(data.tv).forEach((tvs) => {
+						if ( tvs.id == 0 ) {
+							station = 'tv81'
+						} else if ( tvs.id == 1 ) {
+							station = 'tv83'
+						} else if ( tvs.id == 2 ) {
+							station = 'tv86'
+						} else if ( tvs.id == 3 ) {
+							station = 'tv84'
+						} else if ( tvs.id == 4 ) {
+							station = 'tv82'
+						}
+						hpm.stationIds[station]['nowPlaying'] = tvs;
+						if ( hpm.stationIds[station]['refresh'] ) {
+							hpm.stationIds[station].obj.innerHTML = '<h3>' + tvs.artist + '</h3>';
+						}
+					});
+				});
+			};
+			document.addEventListener('DOMContentLoaded', () => {
+				hpm.npSearch();
+			});</script>
+	</body>
+</html>
