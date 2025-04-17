@@ -1,13 +1,22 @@
 {
-  "originHash" : "dc7303ac2f9e5ea03b04f170e599d6ac90640bcf230278dbb89c3f9f5ecef4cb",
+  "originHash" : "a6fbe718701fe452ae3b5eed56d6a781ffb5f72cc19bb7d5637f9299c7f1d557",
   "pins" : [
     {
-      "identity" : "blackbird",
+      "identity" : "swift-html-entities",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/marcoarment/Blackbird.git",
+      "location" : "https://github.com/Kitura/swift-html-entities.git",
       "state" : {
-        "revision" : "e2bf935089cd7620031ea342eaf96bf4ba3a22dc",
-        "version" : "0.5.0"
+        "revision" : "d8ca73197f59ce260c71bd6d7f6eb8bbdccf508b",
+        "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "tinystorage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/christianselig/TinyStorage.git",
+      "state" : {
+        "revision" : "c50eaa8d456a3c367108a13ecd864c8c30302be7",
+        "version" : "1.0.17"
       }
     }
   ],
