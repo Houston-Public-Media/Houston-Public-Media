@@ -145,7 +145,6 @@ struct WpCategory: Encodable, Equatable, Decodable {
 	let name: String
 }
 struct HpmCategories: Decodable {
-	var list: [WpCategory]
 	var articles: [Int: [ArticleData]]
 }
 
@@ -226,12 +225,7 @@ func CategoryIds(categories: [WpCategory]) -> [Int] {
 		NowPlayingStation(id: 1, name: "Classical", artist: "Houston Public Media Classical", title: "", album: "" ),
 		NowPlayingStation(id: 2, name: "The Vibe from KTSU and HPM", artist: "The Vibe from KTSU and HPM", title: "", album: "" )
 	], tv: [])
-	@Published var categories = HpmCategories(list: [
-		WpCategory(id: 2113, name: "Local News"),
-		WpCategory(id: 29328, name: "inDepth"),
-		WpCategory(id: 3340, name: "Sports"),
-		WpCategory(id: 3, name: "Arts & Culture")
-	], articles: [:])
+	@Published var categories = HpmCategories(articles: [:])
 	
 	func jsonPull() async {
 		do {
@@ -266,7 +260,7 @@ func CategoryIds(categories: [WpCategory]) -> [Int] {
 				categories.articles[category.id] = try await UpdateCategoryArticles(id: category.id)
 			}
 		} catch {
-			print("Categories update failed with error \(error)")
+			print("Podcast episodes update failed with error \(error)")
 		}
 	}
 }
