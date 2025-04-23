@@ -61,9 +61,10 @@ struct TalkShowView: View {
 				if playback.state == .playing {
 					playback.pause()
 				}
-				playback.startAudio(station: station)
+				playback.startAudio(audioType: .stream, station: station)
 				playback.state = .playing
 				playback.currentStation = station.id
+				playback.audioType = .stream
 			}, label: {
 				Text("Listen")
 			})

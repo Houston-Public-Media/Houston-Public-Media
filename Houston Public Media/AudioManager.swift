@@ -13,8 +13,13 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 	@Published var itemTitle: String = ""
 	@Published var state: StateType = .stopped
 	@Published var currentStation: Int = 0
+	@Published var audioType: AudioType = .stream
+	@Published var currentEpisode: PodcastEpisodePlayable? = nil
 	enum StateType {
 		case stopped, playing, paused
+	}
+	enum AudioType {
+		case stream, episode
 	}
 	private var player: AVPlayer?
 	private var session = AVAudioSession.sharedInstance()
@@ -32,11 +37,25 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			try session.overrideOutputAudioPort(.speaker)
 		} catch _ {}
 	}
-	func startAudio(station: Station) {
-			
+	func startAudio(audioType: AudioType, station: Station? = nil, episode: PodcastEpisodePlayable? = nil) {
+		var audioSource: String = ""
+		var artist: String = ""
+		var title: String = ""
+		
+		if audioType == .stream {
+			guard let station = station else { return }
+			audioSource = station.hlsSource
+			artist = station.name
+		} else {
+			guard let episode = episode else { return }
+			audioSource = episode.attachments.url
+			artist = episode.podcastName
+			title = episode.episodeTitle
+			currentEpisode = episode
+		}
 		// activate our session before playing audio
 		activateSession()
-		let asset = AVURLAsset(url: URL(string: station.hlsSource)!)
+		let asset = AVURLAsset(url: URL(string: audioSource)!)
 		let playerItem = AVPlayerItem(asset: asset)
 		let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
 		metaOutput.setDelegate(self, queue: DispatchQueue.main)
@@ -53,8 +72,13 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			commandCenter.playCommand.isEnabled = true
 			commandCenter.nextTrackCommand.isEnabled = false
 			commandCenter.previousTrackCommand.isEnabled = false
-			commandCenter.skipForwardCommand.isEnabled = false
-			commandCenter.skipBackwardCommand.isEnabled = false
+			if audioType == .stream {
+				commandCenter.skipForwardCommand.isEnabled = false
+				commandCenter.skipBackwardCommand.isEnabled = false
+			} else {
+				commandCenter.skipForwardCommand.isEnabled = true
+				commandCenter.skipBackwardCommand.isEnabled = true
+			}
 			commandCenter.pauseCommand.isEnabled = true
 			
 			commandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
@@ -71,12 +95,21 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 				}
 				return .commandFailed
 			}
-			let defaultArtwork = UIImage(named: "ListenLive_" + station.name)!
+			// Try to integrate the functions copied into BBEdit so that artwork can be downloaded and displayed in Media Player
+			var defaultArtwork = UIImage(named: "ListenLive_News 88.7")
+			if audioType == .stream {
+				defaultArtwork = UIImage(named: "ListenLive_" + artist)
+			} else {
+				let filePath = GetPodcastArtwork(filename: (episode?.podcastName.convertedToSlug() ?? "") + ".webp")
+				if filePath != nil {
+					defaultArtwork = UIImage(contentsOfFile: filePath!)
+				}
+			}
 			var nowPlayingInfo = [
-				MPMediaItemPropertyTitle: self.itemTitle,
-				MPMediaItemPropertyArtist: station.name,
-				MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: defaultArtwork.size) { @Sendable _ in
-					defaultArtwork
+				MPMediaItemPropertyTitle: title,
+				MPMediaItemPropertyArtist: artist,
+				MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: defaultArtwork!.size) { @Sendable _ in
+					defaultArtwork!
 				}
 			] as [String: Any]
 			nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true

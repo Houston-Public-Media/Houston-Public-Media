@@ -9,6 +9,7 @@ import HTMLEntities
 
 struct PodcastDetailView: View {
 	@EnvironmentObject var data: StationData
+	@EnvironmentObject var playback: AudioManager
 	var index: Int
 	var body: some View {
 		let description = data.podcasts.list[index].description
@@ -43,9 +44,42 @@ struct PodcastDetailView: View {
 							}
 						}
 						Button(action: {
-							print("Playing \(episode.attachments.url)")
+							let podEp = PodcastEpisodePlayable(
+								id: episode.id,
+								image: data.podcasts.list[index].image,
+								podcastName: data.podcasts.list[index].name,
+								episodeTitle: episode.title.htmlUnescape(),
+								excerpt: episode.excerpt,
+								date_gmt: episode.date_gmt,
+								thumbnail: episode.thumbnail,
+								attachments: episode.attachments
+							)
+							if playback.state == .playing {
+								playback.pause()
+								if playback.currentStation != episode.id {
+									playback.startAudio(audioType: .episode, episode: podEp)
+									playback.state = .playing
+									playback.currentStation = episode.id
+									playback.audioType = .episode
+									playback.currentEpisode = podEp
+								}
+							} else {
+								if playback.currentStation == podEp.id {
+									playback.play()
+								} else {
+									playback.startAudio(audioType: .episode, episode: podEp)
+									playback.state = .playing
+									playback.currentStation = episode.id
+									playback.audioType = .episode
+									playback.currentEpisode = podEp
+								}
+							}
 						}, label: {
-							Image(systemName: "play.fill").accessibilityLabel("Play \(episode.title)")
+							if playback.state == .playing && playback.currentStation == episode.id {
+								Image(systemName: "pause.fill").accessibilityLabel("Pause episode")
+							} else {
+								Image(systemName: "play.fill").accessibilityLabel("Play episode")
+							}
 						})
 					}
 				}
@@ -63,5 +97,5 @@ struct PodcastDetailView: View {
 }
 
 #Preview {
-	PodcastDetailView(index: 0).environmentObject(StationData())
+	PodcastDetailView(index: 0).environmentObject(StationData()).environmentObject(AudioManager())
 }

@@ -68,6 +68,16 @@ struct PodcastEnclosure: Decodable {
 	let url: String
 	let duration_in_seconds: String
 }
+struct PodcastEpisodePlayable: Decodable {
+	let id: Int
+	let image: ImageCrops
+	let podcastName: String
+	let episodeTitle: String
+	let excerpt: String
+	let date_gmt: Date
+	let thumbnail: String
+	let attachments: PodcastEnclosure
+}
 struct ImageCrops: Decodable {
 	let full: ImageCrop
 	let medium: ImageCrop
@@ -139,6 +149,20 @@ struct Coauthor: Decodable {
 	let display_name: String
 	let user_nicename: String
 	let guest_author: Bool
+	var extra: CoauthorExtra?
+}
+struct CoauthorExtra: Decodable {
+	var biography: String?
+	var metadata: CoauthorMetadata?
+}
+struct CoauthorMetadata: Decodable {
+	let title: String
+	let pronouns: String
+	let email: String
+	let facebook: String
+	let twitter: String
+	let linkedin: String
+	let phone: String
 }
 struct WpCategory: Encodable, Equatable, Decodable {
 	let id: Int
@@ -154,11 +178,14 @@ func UpdateStreams() async throws -> Streams {
 }
 func UpdatePodcasts() async throws -> PodcastList {
 	let podcasts: PodcastApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-podcast/v1/list")!)
+	for podcast in podcasts.data.list {
+		await CachePodcastArtwork(url: podcast.image.medium.url, filename: podcast.name.convertedToSlug() + ".webp")
+	}
 	return podcasts.data
 }
 func UpdatePriorityArticles() async throws -> PriorityArticleData {
-	//let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
-	let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://hpmwebv2.s3-us-west-2.amazonaws.com/assets/promos-test.json")!)
+	let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
+	//let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://hpmwebv2.s3-us-west-2.amazonaws.com/assets/promos-test.json")!)
 	return priorityArticles.data
 }
 func UpdatePromos() async throws -> PromoData {
@@ -185,6 +212,42 @@ func CategoryIds(categories: [WpCategory]) -> [Int] {
 		ids.append(category.id)
 	}
 	return ids
+}
+
+func CachePodcastArtwork(url: String, filename: String) async {
+	let fileManager: FileManager = FileManager.default
+	let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+	var redownload: Bool = false
+	let documentUrl = directory.appendingPathComponent(filename)
+	if let attributes = try? FileManager.default.attributesOfItem(atPath: documentUrl.path) as [FileAttributeKey: Any],
+		let modificationDate = attributes[FileAttributeKey.modificationDate] as? Date {
+			let delta = modificationDate.distance(to: Date())
+			if delta > 86400 {
+				redownload = true
+			}
+		}
+	
+	// here check if file already exists on simulator
+	if redownload {
+		do {
+			let imageData: Data = try Data(contentsOf: URL(string: url)!)
+			try imageData.write(to: URL(fileURLWithPath: documentUrl.path))
+		} catch {
+			print("Podcast episodes update failed with error \(error)")
+		}
+	}
+}
+
+func GetPodcastArtwork(filename: String) -> String? {
+	let fileManager: FileManager = FileManager.default
+	let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+	
+	let documentUrl = directory.appendingPathComponent(filename)
+	if fileManager.fileExists(atPath: (documentUrl.path)) {
+		return documentUrl.path
+	} else {
+		return nil
+	}
 }
 
 @MainActor class StationData: ObservableObject {

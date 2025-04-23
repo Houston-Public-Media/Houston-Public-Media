@@ -12,9 +12,17 @@ struct AudioPlayerView: View {
 	@EnvironmentObject var playback: AudioManager
     var body: some View {
 		HStack {
-			Image("ListenLive_" + data.streams.audio[playback.currentStation].name)
-				.resizable()
-				.frame(width: 30, height: 30)
+			if playback.audioType == .stream {
+				Image("ListenLive_" + data.streams.audio[playback.currentStation].name)
+					.resizable()
+					.frame(width: 30, height: 30)
+			} else {
+				AsyncImage(url: URL(string: playback.currentEpisode?.image.full.url ?? "")) { image in
+					image.resizable().aspectRatio(contentMode: .fit).frame(width: 30, height: 30)
+				} placeholder: {
+					ProgressView()
+				}
+			}
 			if playback.state != .playing {
 				Button(action: {
 					playback.play()
@@ -34,12 +42,21 @@ struct AudioPlayerView: View {
 			}
 			VStack {
 				if playback.state != .stopped {
-					Text(data.streams.audio[playback.currentStation].name)
-						.font(.system(size: 12, weight: .bold))
-						.frame(maxWidth: .infinity, alignment: .leading)
-					Text(nowPlayingCleanup(nowPlaying: data.nowPlaying.radio[playback.currentStation]))
-						.font(.system(size: 11, weight: .regular))
-						.frame(maxWidth: .infinity, alignment: .leading)
+					if playback.audioType == .stream {
+						Text(data.streams.audio[playback.currentStation].name)
+							.font(.system(size: 12, weight: .bold))
+							.frame(maxWidth: .infinity, alignment: .leading)
+						Text(nowPlayingCleanup(nowPlaying: data.nowPlaying.radio[playback.currentStation]))
+							.font(.system(size: 11, weight: .regular))
+							.frame(maxWidth: .infinity, alignment: .leading)
+					} else {
+						Text(playback.currentEpisode?.podcastName ?? "")
+							.font(.system(size: 12, weight: .bold))
+							.frame(maxWidth: .infinity, alignment: .leading)
+						Text(playback.currentEpisode?.episodeTitle ?? "")
+							.font(.system(size: 11, weight: .regular))
+							.frame(maxWidth: .infinity, alignment: .leading)
+					}
 				}
 			}
 		}

@@ -37,9 +37,10 @@ struct ListenView: View {
 										playback.pause()
 										playback.state = .paused
 									} else {
-										playback.startAudio(station: station)
+										playback.startAudio(audioType: .stream, station: station)
 										playback.state = .playing
 										playback.currentStation = station.id
+										playback.audioType = .stream
 									}
 								}, label: {
 									if playback.state == .playing && playback.currentStation == station.id {
