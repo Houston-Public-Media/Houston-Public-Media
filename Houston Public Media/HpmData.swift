@@ -48,6 +48,19 @@ struct Podcast: Identifiable, Decodable {
 	let description: String
 	let feed_json: String
 	var episodelist: [PodcastEpisode]?
+	let external_links: PodcastExternalLinks
+}
+struct PodcastExternalLinks: Decodable {
+	let itunes: String
+	let npr: String
+	let youtube: String
+	let spotify: String
+	let pcast: String
+	let overcast: String
+	let amazon: String
+	let tunein: String
+	let pandora: String
+	let iheart: String
 }
 struct PodcastEpisode: Identifiable, Decodable {
 	let id: Int
@@ -77,6 +90,7 @@ struct PodcastEpisodePlayable: Decodable {
 	let date_gmt: Date
 	let thumbnail: String
 	let attachments: PodcastEnclosure
+	let duration: String
 }
 struct ImageCrops: Decodable {
 	let full: ImageCrop
@@ -217,13 +231,14 @@ func CategoryIds(categories: [WpCategory]) -> [Int] {
 func CachePodcastArtwork(url: String, filename: String) async {
 	let fileManager: FileManager = FileManager.default
 	let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-	var redownload: Bool = false
+	var redownload: Bool = true
 	let documentUrl = directory.appendingPathComponent(filename)
 	if let attributes = try? FileManager.default.attributesOfItem(atPath: documentUrl.path) as [FileAttributeKey: Any],
 		let modificationDate = attributes[FileAttributeKey.modificationDate] as? Date {
 			let delta = modificationDate.distance(to: Date())
-			if delta > 86400 {
-				redownload = true
+			if delta < 86400 {
+				redownload = false
+				print("\(filename) is less than a day old")
 			}
 		}
 	
@@ -232,6 +247,7 @@ func CachePodcastArtwork(url: String, filename: String) async {
 		do {
 			let imageData: Data = try Data(contentsOf: URL(string: url)!)
 			try imageData.write(to: URL(fileURLWithPath: documentUrl.path))
+			print("\(filename) saved successfully")
 		} catch {
 			print("Podcast episodes update failed with error \(error)")
 		}

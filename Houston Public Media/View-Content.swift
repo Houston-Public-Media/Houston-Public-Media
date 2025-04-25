@@ -18,7 +18,7 @@ struct ContentView: View {
 				Image("HPM Wordmark")
 					.resizable()
 					.scaledToFit()
-					.frame(width: (UIScreen.main.bounds.size.width / 2))
+					.frame(maxHeight: 16)
 				Spacer()
 				Link("Donate", destination: URL(string: "https://www.houstonpublicmedia.org/donate")!)
 					.foregroundColor(Color("HPM White"))
@@ -26,22 +26,38 @@ struct ContentView: View {
 				.padding(.horizontal)
 			TabView(selection: $selectedTab) {
 				Group {
-					TodayView(data: _hpmData, playback: _playback, selectedTab: $selectedTab)
+					NavigationStack {
+						TodayView(data: _hpmData, playback: _playback, selectedTab: $selectedTab)
+							.navigationTitle("Today")
+							.navigationBarTitleDisplayMode(.inline)
+					}
 						.tabItem {
 							Label("Today", systemImage: "newspaper")
 						}
 						.tag(0)
-					ListenView(data: _hpmData, playback: _playback)
+					NavigationStack {
+						ListenView(data: _hpmData, playback: _playback)
+							.navigationTitle("Listen")
+							.navigationBarTitleDisplayMode(.inline)
+					}
 						.tabItem {
 							Label("Listen", systemImage: "play.circle.fill")
 						}
 						.tag(1)
-					WatchView(data: _hpmData)
+					NavigationStack {
+						WatchView(data: _hpmData)
+							.navigationTitle("Watch")
+							.navigationBarTitleDisplayMode(.inline)
+					}
 						.tabItem {
 							Label("Watch", systemImage: "tv")
 						}
 						.tag(2)
-					SettingsView()
+					NavigationStack {
+						SettingsView()
+							.navigationTitle("Settings")
+							.navigationBarTitleDisplayMode(.inline)
+					}
 						.tabItem {
 							Label("Settings", systemImage: "gear")
 						}
@@ -57,7 +73,6 @@ struct ContentView: View {
 			}
 		}
 			.task {
-				await hpmData.jsonPull()
 				try? await Task.sleep(for: Duration.seconds(1))
 				self.launchScreenState.dismiss()
 				repeat {

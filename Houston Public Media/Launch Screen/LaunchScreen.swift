@@ -45,7 +45,7 @@ struct LaunchScreenView: View {
     
     @ViewBuilder
     private var backgroundColor: some View {  // Mark 3
-		Color(hue: 0.972, saturation: 0.92, brightness: 0.78, opacity: 1.0).ignoresSafeArea()
+		Color("HPM Red").ignoresSafeArea()
     }
     
     private let animationTimer = Timer // Mark 5

@@ -9,6 +9,9 @@ import Combine
 import MediaPlayer
 import SwiftUI
 
+//TODO: manage transition from foreground to background for streaming audio
+//TODO: manage recovery from stopped state
+
 final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutputPushDelegate {
 	@Published var itemTitle: String = ""
 	@Published var state: StateType = .stopped
@@ -21,18 +24,18 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 	enum AudioType {
 		case stream, episode
 	}
-	private var player: AVPlayer?
+	private var player: AVPlayer = AVPlayer()
 	private var session = AVAudioSession.sharedInstance()
-
+	
 	private func activateSession() {
 		do {
 			try session.setCategory( .playback, mode: .default, options: [] )
 		} catch _ {}
-
+		
 		do {
 			try session.setActive(true, options: .notifyOthersOnDeactivation)
 		} catch _ {}
-
+		
 		do {
 			try session.overrideOutputAudioPort(.speaker)
 		} catch _ {}
@@ -60,61 +63,100 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
 		metaOutput.setDelegate(self, queue: DispatchQueue.main)
 		playerItem.add(metaOutput)
-		if let player = player {
-			player.replaceCurrentItem(with: playerItem)
+		player.replaceCurrentItem(with: playerItem)
+		player.play()
+		let commandCenter = MPRemoteCommandCenter.shared()
+		commandCenter.playCommand.isEnabled = true
+		commandCenter.nextTrackCommand.isEnabled = false
+		commandCenter.previousTrackCommand.isEnabled = false
+		if audioType == .stream {
+			commandCenter.skipForwardCommand.isEnabled = false
+			commandCenter.skipBackwardCommand.isEnabled = false
+			commandCenter.stopCommand.isEnabled = true
+			commandCenter.pauseCommand.isEnabled = false
 		} else {
-			player = AVPlayer(playerItem: playerItem)
+			commandCenter.pauseCommand.isEnabled = true
+			commandCenter.stopCommand.isEnabled = false
+			commandCenter.skipForwardCommand.isEnabled = true
+			commandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: 15)]
+			commandCenter.skipBackwardCommand.isEnabled = true
+			commandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: 15)]
 		}
 		
-		if let player = player {
-			player.play()
-			let commandCenter = MPRemoteCommandCenter.shared()
-			commandCenter.playCommand.isEnabled = true
-			commandCenter.nextTrackCommand.isEnabled = false
-			commandCenter.previousTrackCommand.isEnabled = false
-			if audioType == .stream {
-				commandCenter.skipForwardCommand.isEnabled = false
-				commandCenter.skipBackwardCommand.isEnabled = false
+		commandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+			if self.state == .stopped && self.player.currentItem == nil {
+				self.startAudio(audioType: .stream, station: station)
 			} else {
-				commandCenter.skipForwardCommand.isEnabled = true
-				commandCenter.skipBackwardCommand.isEnabled = true
+				self.player.play()
+				self.state = .playing
 			}
-			commandCenter.pauseCommand.isEnabled = true
-			
-			commandCenter.playCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-				if self.player?.rate == 0.0 {
-					self.player?.play()
-					return .success
-				}
-				return .commandFailed
-			}
-			commandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-				if self.player?.rate != 0.0 {
-					self.player?.pause()
-					return .success
-				}
-				return .commandFailed
-			}
-			// Try to integrate the functions copied into BBEdit so that artwork can be downloaded and displayed in Media Player
-			var defaultArtwork = UIImage(named: "ListenLive_News 88.7")
-			if audioType == .stream {
-				defaultArtwork = UIImage(named: "ListenLive_" + artist)
-			} else {
-				let filePath = GetPodcastArtwork(filename: (episode?.podcastName.convertedToSlug() ?? "") + ".webp")
-				if filePath != nil {
-					defaultArtwork = UIImage(contentsOfFile: filePath!)
-				}
-			}
-			var nowPlayingInfo = [
-				MPMediaItemPropertyTitle: title,
-				MPMediaItemPropertyArtist: artist,
-				MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: defaultArtwork!.size) { @Sendable _ in
-					defaultArtwork!
-				}
-			] as [String: Any]
-			nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
-			MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+			self.updatePlaybackRateMetadata()
+			return .success
 		}
+		commandCenter.pauseCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+			self.player.pause()
+			self.state = .paused
+			self.updatePlaybackRateMetadata()
+			return .success
+		}
+		commandCenter.stopCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+			self.stop()
+			self.state = .stopped
+			return .success
+		}
+		
+		commandCenter.skipForwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+			if self.player.rate != 0.0 {
+				let currentTime = self.player.currentTime()
+				let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
+				
+				let newTime = CMTimeAdd(currentTime, offset)
+				self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
+					self.updatePlaybackRateMetadata()
+				})
+				return .success
+			}
+			return .commandFailed
+		}
+		commandCenter.skipBackwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
+			if self.player.rate != 0.0 {
+				let currentTime = self.player.currentTime()
+				let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
+				
+				let newTime = CMTimeSubtract(currentTime, offset)
+				self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
+					self.updatePlaybackRateMetadata()
+				})
+				return .success
+			}
+			return .commandFailed
+		}
+		
+		var defaultArtwork = UIImage(named: "ListenLive_News 88.7")
+		if audioType == .stream {
+			defaultArtwork = UIImage(named: "ListenLive_" + artist)
+		} else {
+			let filePath = GetPodcastArtwork(filename: (episode?.podcastName.convertedToSlug() ?? "") + ".webp")
+			if filePath != nil {
+				defaultArtwork = UIImage(contentsOfFile: filePath!)
+			}
+		}
+		var nowPlayingInfo = [
+			MPMediaItemPropertyTitle: title,
+			MPMediaItemPropertyArtist: artist,
+			MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: defaultArtwork!.size) { @Sendable _ in
+				defaultArtwork!
+			}
+		] as [String: Any]
+		if audioType == .stream {
+			nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+		} else {
+			let duration = GetDurationAsFloat(duration: episode?.attachments.duration_in_seconds ?? "0")
+			nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
+			nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(self.player.currentTime())
+			nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = false
+		}
+		MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
 	}
 	
 	func updateMetadata(title: String) {
@@ -131,25 +173,23 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			print("Failed to deactivate audio session: \(error.localizedDescription)")
 		}
 	}
+	
 	func play() {
-		if let player = player {
-			player.play()
-		}
+		self.player.play()
 	}
-
+	
 	func pause() {
-		if let player = player {
-			player.pause()
-		}
+		self.player.pause()
 	}
-
+	
+	func stop() {
+		self.player.replaceCurrentItem(with: nil)
+	}
+	
 	func getPlaybackDuration() -> Double {
-		guard let player = player else {
-			return 0
-		}
-	 
-		return player.currentItem?.duration.seconds ?? 0
+		return self.player.currentItem?.duration.seconds ?? 0
 	}
+	
 	func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], from track: AVPlayerItemTrack?) {
 		if groups.first?.items != nil {
 			let item = groups.first?.items[1]
@@ -177,5 +217,49 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			self.itemTitle = "MetaData Error" // No Metadata or Could not read
 		}
 	}
-}
+	
+	func updatePlaybackRateMetadata() {
+		guard player.currentItem != nil else {
+			return
+		}
+		
+		var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [String: Any]()
 
+		let duration = Float(CMTimeGetSeconds(self.player.currentItem!.duration))
+		nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
+		nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = CMTimeGetSeconds(self.player.currentTime())
+		nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = self.player.rate
+		nowPlayingInfo[MPNowPlayingInfoPropertyDefaultPlaybackRate] = self.player.rate
+		
+		MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+		
+		if self.player.rate == 0.0 {
+			state = .paused
+			self.state = .paused
+			#if os(macOS)
+			nowPlayingInfoCenter.playbackState = .paused
+			#endif
+		} else {
+			state = .playing
+			self.state = .playing
+			#if os(macOS)
+			nowPlayingInfoCenter.playbackState = .playing
+			#endif
+		}
+	}
+	
+	func GetDurationAsFloat(duration: String) -> Float {
+		var totalDuration: Float = 0.0
+		let split = duration.split(separator: ":")
+		let count = split.count
+		for index in 0..<count {
+			let mult = pow(Double(60), Double(index))
+			var floatVal = Float(split[count - index - 1]) ?? 0.0
+			if index > 0 {
+				floatVal *= Float(mult)
+			}
+			totalDuration += floatVal
+		}
+		return totalDuration
+	}
+}

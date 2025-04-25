@@ -15,15 +15,169 @@ struct PodcastDetailView: View {
 		let description = data.podcasts.list[index].description
 		List {
 			Section(header: Text(data.podcasts.list[index].name)) {
-				VStack {
-					AsyncImage(url: URL(string: data.podcasts.list[index].image.full.url)) { image in
-						image.resizable().cornerRadius(10).aspectRatio(contentMode: .fit)
-					} placeholder: {
-						ProgressView()
+				if UIDevice.current.userInterfaceIdiom == .pad {
+					HStack(alignment: .top, spacing: 15) {
+						AsyncImage(url: URL(string: data.podcasts.list[index].image.full.url)) { image in
+							image.resizable().cornerRadius(10).aspectRatio(contentMode: .fit)
+						} placeholder: {
+							ProgressView()
+						}
+						VStack(spacing: 10) {
+							Text(.init(description.htmlToMarkDown())).frame(maxWidth: .infinity, alignment: .leading)
+							HStack(spacing: 15) {
+								if !data.podcasts.list[index].external_links.itunes.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.itunes)!) {
+										Image("Podcast-Apple")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to Apple Podcasts for \(data.podcasts.list[index].name)")
+									}
+								}
+								if !data.podcasts.list[index].external_links.spotify.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.spotify)!) {
+										Image("Podcast-Spotify")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to Spotify for \(data.podcasts.list[index].name)")
+									}
+								}
+								if !data.podcasts.list[index].external_links.npr.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.npr)!) {
+										Image("Podcast-NPR")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to NPR App for \(data.podcasts.list[index].name)")
+									}
+								}
+								if !data.podcasts.list[index].external_links.pcast.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.pcast)!) {
+										Image("Podcast-PocketCasts")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to PocketCasts for \(data.podcasts.list[index].name)")
+									}
+								}
+								if !data.podcasts.list[index].external_links.overcast.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.overcast)!) {
+										Image("Podcast-Overcast")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to Overcast for \(data.podcasts.list[index].name)")
+									}
+								}
+								if !data.podcasts.list[index].external_links.amazon.isEmpty {
+									Link(destination: URL(string: data.podcasts.list[index].external_links.amazon)!) {
+										Image("Podcast-Amazon")
+											.resizable()
+											.aspectRatio(1, contentMode: .fit)
+											.cornerRadius(8)
+											.frame(width: 40, height: 40)
+											.accessibilityLabel("Link to Amazon Music for \(data.podcasts.list[index].name)")
+									}
+								}
+								Link(destination: URL(string: data.podcasts.list[index].feed)!) {
+									Image("Podcast-RSS")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("RSS feed for \(data.podcasts.list[index].name)")
+								}
+							}
+						}
 					}
-					Text(.init(description.htmlToMarkDown())).frame(maxWidth: .infinity, alignment: .leading)
+					.listRowBackground(Color.clear)
+				} else {
+					VStack {
+						AsyncImage(url: URL(string: data.podcasts.list[index].image.full.url)) { image in
+							image.resizable().cornerRadius(10).aspectRatio(contentMode: .fit)
+						} placeholder: {
+							ProgressView()
+						}
+						Text(.init(description.htmlToMarkDown())).frame(maxWidth: .infinity, alignment: .leading)
+						HStack(spacing: 15) {
+							if !data.podcasts.list[index].external_links.itunes.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.itunes)!) {
+									Image("Podcast-Apple")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to Apple Podcasts for \(data.podcasts.list[index].name)")
+								}
+							}
+							if !data.podcasts.list[index].external_links.spotify.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.spotify)!) {
+									Image("Podcast-Spotify")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to Spotify for \(data.podcasts.list[index].name)")
+								}
+							}
+							if !data.podcasts.list[index].external_links.npr.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.npr)!) {
+									Image("Podcast-NPR")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to NPR App for \(data.podcasts.list[index].name)")
+								}
+							}
+							if !data.podcasts.list[index].external_links.pcast.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.pcast)!) {
+									Image("Podcast-PocketCasts")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to PocketCasts for \(data.podcasts.list[index].name)")
+								}
+							}
+							if !data.podcasts.list[index].external_links.overcast.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.overcast)!) {
+									Image("Podcast-Overcast")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to Overcast for \(data.podcasts.list[index].name)")
+								}
+							}
+							if !data.podcasts.list[index].external_links.amazon.isEmpty {
+								Link(destination: URL(string: data.podcasts.list[index].external_links.amazon)!) {
+									Image("Podcast-Amazon")
+										.resizable()
+										.aspectRatio(1, contentMode: .fit)
+										.cornerRadius(8)
+										.frame(width: 40, height: 40)
+										.accessibilityLabel("Link to Amazon Music for \(data.podcasts.list[index].name)")
+								}
+							}
+							Link(destination: URL(string: data.podcasts.list[index].feed)!) {
+								Image("Podcast-RSS")
+									.resizable()
+									.aspectRatio(1, contentMode: .fit)
+									.cornerRadius(8)
+									.frame(width: 40, height: 40)
+									.accessibilityLabel("RSS feed for \(data.podcasts.list[index].name)")
+							}
+						}
+					}
+					.listRowBackground(Color.clear)
 				}
-				.listRowBackground(Color.clear)
 			}
 			.headerProminence(.increased)
 			Section(header: Text("Episodes")) {
@@ -52,7 +206,8 @@ struct PodcastDetailView: View {
 								excerpt: episode.excerpt,
 								date_gmt: episode.date_gmt,
 								thumbnail: episode.thumbnail,
-								attachments: episode.attachments
+								attachments: episode.attachments,
+								duration: episode.attachments.duration_in_seconds
 							)
 							if playback.state == .playing {
 								playback.pause()
@@ -92,6 +247,9 @@ struct PodcastDetailView: View {
 					await data.podcastPull(index: index)
 				}
 			}
+		}
+		.refreshable {
+			await data.podcastPull(index: index)
 		}
 	}
 }

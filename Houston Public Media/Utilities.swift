@@ -32,31 +32,6 @@ extension URLSession {
 	}
 }
 
-enum ProgramError: Error {
-	case missingApplicationCertificate
-	case missingApplicationCertificateUrl
-	case missingAssetUrl
-	case applicationCertificateRequestFailed
-	case missingLicensingServiceUrl
-	case noCKCReturnedByKSM
-}
-
-struct IsVisibleModifier : ViewModifier {
-	 var isVisible : Bool
-	// the transition will add a custom animation while displaying the
-	// view.
-	var transition : AnyTransition
-
-	func body(content: Content) -> some View {
-		ZStack{
-			if isVisible{
-				content
-					.transition(transition)
-			}
-		}
-	}
-}
-
 extension View {
 	func border(width: CGFloat, edges: [Edge], color: Color) -> some View {
 		overlay(EdgeBorder(width: width, edges: edges).foregroundColor(color))
