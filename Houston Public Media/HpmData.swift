@@ -199,7 +199,6 @@ func UpdatePodcasts() async throws -> PodcastList {
 }
 func UpdatePriorityArticles() async throws -> PriorityArticleData {
 	let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
-	//let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://hpmwebv2.s3-us-west-2.amazonaws.com/assets/promos-test.json")!)
 	return priorityArticles.data
 }
 func UpdatePromos() async throws -> PromoData {

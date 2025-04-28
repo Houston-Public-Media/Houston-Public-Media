@@ -10,7 +10,6 @@ import MediaPlayer
 import SwiftUI
 
 //TODO: manage transition from foreground to background for streaming audio
-//TODO: manage recovery from stopped state
 
 final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutputPushDelegate {
 	@Published var itemTitle: String = ""
@@ -40,6 +39,7 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			try session.overrideOutputAudioPort(.speaker)
 		} catch _ {}
 	}
+	
 	func startAudio(audioType: AudioType, station: Station? = nil, episode: PodcastEpisodePlayable? = nil) {
 		var audioSource: String = ""
 		var artist: String = ""
@@ -60,6 +60,10 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		activateSession()
 		let asset = AVURLAsset(url: URL(string: audioSource)!)
 		let playerItem = AVPlayerItem(asset: asset)
+		if audioType == .stream {
+			playerItem.preferredPeakBitRate = 64000
+		}
+
 		let metaOutput = AVPlayerItemMetadataOutput(identifiers: nil)
 		metaOutput.setDelegate(self, queue: DispatchQueue.main)
 		playerItem.add(metaOutput)

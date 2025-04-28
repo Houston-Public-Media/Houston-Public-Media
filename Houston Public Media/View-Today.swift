@@ -32,7 +32,7 @@ struct TodayView: View {
 					HStack(spacing: 15) {
 						ForEach(data.priorityData.articles, id: \.id) { article in
 							ZStack {
-								Color.white
+								Color("HPM Background")
 									.cornerRadius(8)
 								VStack {
 									AsyncImage(url: URL(string: article.picture)!) { image in
@@ -52,7 +52,7 @@ struct TodayView: View {
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.padding(.bottom, 3)
 										.padding(.horizontal, 8)
-										.tint(Color("HPM Gray"))
+										.tint(Color("HPM Main Text"))
 									Spacer()
 									HStack {
 										Text(wpDateFormatter(date: article.date_gmt))
@@ -107,7 +107,7 @@ struct TodayView: View {
 									Image(systemName: "arrow.up.right").accessibilityLabel("Open article")
 								}
 							})
-								.tint(Color("HPM Gray"))
+								.tint(Color("HPM Main Text"))
 						}
 					}
 					.headerProminence(.increased)
