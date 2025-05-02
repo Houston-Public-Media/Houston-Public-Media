@@ -65,26 +65,6 @@ struct PodcastDetailView: View {
 											.accessibilityLabel("Link to PocketCasts for \(data.podcasts.list[index].name)")
 									}
 								}
-								if !data.podcasts.list[index].external_links.overcast.isEmpty {
-									Link(destination: URL(string: data.podcasts.list[index].external_links.overcast)!) {
-										Image("Podcast-Overcast")
-											.resizable()
-											.aspectRatio(1, contentMode: .fit)
-											.cornerRadius(8)
-											.frame(width: 40, height: 40)
-											.accessibilityLabel("Link to Overcast for \(data.podcasts.list[index].name)")
-									}
-								}
-								if !data.podcasts.list[index].external_links.amazon.isEmpty {
-									Link(destination: URL(string: data.podcasts.list[index].external_links.amazon)!) {
-										Image("Podcast-Amazon")
-											.resizable()
-											.aspectRatio(1, contentMode: .fit)
-											.cornerRadius(8)
-											.frame(width: 40, height: 40)
-											.accessibilityLabel("Link to Amazon Music for \(data.podcasts.list[index].name)")
-									}
-								}
 								Link(destination: URL(string: data.podcasts.list[index].feed)!) {
 									Image("Podcast-RSS")
 										.resizable()
@@ -144,26 +124,6 @@ struct PodcastDetailView: View {
 										.cornerRadius(8)
 										.frame(width: 40, height: 40)
 										.accessibilityLabel("Link to PocketCasts for \(data.podcasts.list[index].name)")
-								}
-							}
-							if !data.podcasts.list[index].external_links.overcast.isEmpty {
-								Link(destination: URL(string: data.podcasts.list[index].external_links.overcast)!) {
-									Image("Podcast-Overcast")
-										.resizable()
-										.aspectRatio(1, contentMode: .fit)
-										.cornerRadius(8)
-										.frame(width: 40, height: 40)
-										.accessibilityLabel("Link to Overcast for \(data.podcasts.list[index].name)")
-								}
-							}
-							if !data.podcasts.list[index].external_links.amazon.isEmpty {
-								Link(destination: URL(string: data.podcasts.list[index].external_links.amazon)!) {
-									Image("Podcast-Amazon")
-										.resizable()
-										.aspectRatio(1, contentMode: .fit)
-										.cornerRadius(8)
-										.frame(width: 40, height: 40)
-										.accessibilityLabel("Link to Amazon Music for \(data.podcasts.list[index].name)")
 								}
 							}
 							Link(destination: URL(string: data.podcasts.list[index].feed)!) {

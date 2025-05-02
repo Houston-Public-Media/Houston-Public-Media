@@ -118,7 +118,6 @@ struct TodayView: View {
 			.listStyle(GroupedListStyle())
 			.handleOpenURLInApp()
 			.task {
-				await data.jsonPull()
 				await data.updateCategories(list: categories)
 			}
 			.refreshable {

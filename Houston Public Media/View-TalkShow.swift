@@ -26,7 +26,7 @@ struct TalkShowView: View {
 	)
 	init(alert: String) {
 		self.alert = alert
-		if alert.contains("hello-houston") {
+		if alert == "hello-houston" {
 			self.show = "hello-houston"
 			self.showName = "Hello Houston"
 			self.accentColor = "HPM Red"
@@ -42,47 +42,39 @@ struct TalkShowView: View {
 	}
 	var body: some View {
 		HStack {
-			Text(showName + " is live!")
+			Text(showName + " is on the air!")
 				.font(.headline)
 				.foregroundStyle(Color(textColor))
 				.multilineTextAlignment(.leading)
 			Spacer()
-			Button(action: {
-				guard let phoneNum = URL(string: "tel://1-713-440-8870") else {return}
-				UIApplication.shared.open(phoneNum)
-			}) {
-				Text("Call")
-			}
-				.buttonStyle(.borderedProminent)
-				.foregroundStyle(Color("HPM White"))
-				.tint(Color(accentColor))
-			Spacer()
-			Button(action: {
-				if playback.state == .playing {
-					playback.pause()
-				}
-				playback.startAudio(audioType: .stream, station: station)
-				playback.state = .playing
-				playback.currentStation = station.id
-				playback.audioType = .stream
-			}, label: {
-				Text("Listen")
-			})
-				.buttonStyle(.borderedProminent)
-				.foregroundStyle(Color("HPM White"))
-				.tint(Color(accentColor))
-			if show == "hello-houston" {
-				Spacer()
-				Button(action: {
-					guard let youtube = URL(string: "https://www.youtube.com/@HoustonPublicMedia/streams") else {return}
-					UIApplication.shared.open(youtube)
-				}, label: {
-					Text("Watch")
+			Menu("Interact") {
+				Button("Call", action: {
+					guard let phoneNum = URL(string: "tel://1-713-440-8870") else {return}
+					UIApplication.shared.open(phoneNum)
 				})
-					.buttonStyle(.borderedProminent)
-					.foregroundStyle(Color("HPM White"))
-					.tint(Color(accentColor))
+				Button("Text", action: {
+					guard let phoneNum = URL(string: "sms://1-713-440-8870") else {return}
+					UIApplication.shared.open(phoneNum)
+				})
+				Button("Listen", action: {
+					if playback.state == .playing {
+						playback.pause()
+					}
+					playback.startAudio(audioType: .stream, station: station)
+					playback.state = .playing
+					playback.currentStation = station.id
+					playback.audioType = .stream
+				})
+				if show == "hello-houston" {
+					Button("Watch", action: {
+						guard let youtube = URL(string: "https://www.youtube.com/@HoustonPublicMedia/streams") else {return}
+						UIApplication.shared.open(youtube)
+					})
+				}
 			}
+			.buttonStyle(.borderedProminent)
+			.foregroundStyle(Color("HPM White"))
+			.tint(Color(accentColor))
 		}
 			.padding(.horizontal, 8)
 			.frame(width: UIScreen.main.bounds.size.width, height: 40)
@@ -91,5 +83,5 @@ struct TalkShowView: View {
 }
 
 #Preview {
-	TalkShowView(alert: "<div id=\"hm-top\"><p><span><a href=\"https://www.houstonpublicmedia.org/shows/houston-matters/\"><strong>Hello Houston</strong> is on the air now!</a> Join the conversation:</span> Call <a href=\"tel://+17134408870\">713.440.8870</a> | <a href=\"https://www.houstonpublicmedia.org/listen-live/#news\">Listen Live</a> | <a href=\"https://www.youtube.com/@HoustonPublicMedia/streams\">Watch Live</a></p></div>").environmentObject(AudioManager())
+	TalkShowView(alert: "hello-houston").environmentObject(AudioManager())
 }

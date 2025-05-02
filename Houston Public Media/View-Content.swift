@@ -73,6 +73,7 @@ struct ContentView: View {
 			}
 		}
 			.task {
+				await hpmData.jsonPull()
 				try? await Task.sleep(for: Duration.seconds(1))
 				self.launchScreenState.dismiss()
 				repeat {
@@ -80,7 +81,6 @@ struct ContentView: View {
 					try? await Task.sleep(for: .seconds(60))
 				} while (!Task.isCancelled)
 			}
-			.handleOpenURLInApp()
 			.background(Color("HPM Red"))
 	}
 }
