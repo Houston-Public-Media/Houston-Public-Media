@@ -11,7 +11,7 @@ struct WatchView: View {
 	@EnvironmentObject var data: StationData
 	@State private var selection = 0
 	var body: some View {
-		WebView(payload: "watch-live.html", viewType: .file)
+		WebView(payload: "https://cdn.houstonpublicmedia.org/assets/watch-live.html", viewType: .url)
 			.frame(minWidth: 0, maxWidth: .infinity, minHeight: 300, maxHeight: .infinity)
 	}
 }

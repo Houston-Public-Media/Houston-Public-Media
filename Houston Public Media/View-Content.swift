@@ -9,16 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
 	@EnvironmentObject var hpmData: StationData
-	@EnvironmentObject private var launchScreenState: LaunchScreenStateManager
 	@EnvironmentObject var playback: AudioManager
 	@State private var selectedTab: Int = 0
     var body: some View {
 		VStack {
 			HStack {
-				Image("HPM Wordmark")
+				Image("HPM Bat Logo")
 					.resizable()
 					.scaledToFit()
-					.frame(maxHeight: 16)
+					.frame(maxHeight: 36)
 				Spacer()
 				Link("Donate", destination: URL(string: "https://www.houstonpublicmedia.org/donate")!)
 					.foregroundColor(Color("HPM White"))
@@ -74,20 +73,17 @@ struct ContentView: View {
 		}
 			.task {
 				await hpmData.jsonPull()
-				try? await Task.sleep(for: Duration.seconds(1))
-				self.launchScreenState.dismiss()
 				repeat {
 					await hpmData.nowPlayPull()
 					try? await Task.sleep(for: .seconds(60))
 				} while (!Task.isCancelled)
 			}
-			.background(Color("HPM Red"))
+			.background(Color("HPM Blue Secondary"))
 	}
 }
 
 #Preview {
 	ContentView()
 		.environmentObject(StationData())
-		.environmentObject(LaunchScreenStateManager())
 		.environmentObject(AudioManager())
 }

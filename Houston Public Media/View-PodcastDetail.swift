@@ -140,6 +140,7 @@ struct PodcastDetailView: View {
 				}
 			}
 			.headerProminence(.increased)
+			.buttonStyle(BorderlessButtonStyle())
 			Section(header: Text("Episodes")) {
 				ForEach(data.podcasts.list[index].episodelist ?? [], id: \.id) { episode in
 					HStack {

@@ -15,28 +15,24 @@ struct SettingsView: View {
 		List {
 			NavigationLink {
 				let allCategories = [
-					WpCategory(id: 3, name: "Arts & Culture"),
-					WpCategory(id: 2, name: "All News"),
-					WpCategory(id: 32566, name: "City of Houston"),
-					WpCategory(id: 51718, name: "Courts"),
-					WpCategory(id: 10, name: "Education"),
-					WpCategory(id: 14, name: "Energy & Environment"),
-					WpCategory(id: 58671, name: "Fort Bend"),
-					WpCategory(id: 32567, name: "Harris County"),
-					WpCategory(id: 16, name: "Health & Science"),
-					WpCategory(id: 51851, name: "Housing"),
-					WpCategory(id: 29328, name: "inDepth"),
-					WpCategory(id: 52248, name: "Infrastructure"),
-					WpCategory(id: 2113, name: "Local News"),
-					WpCategory(id: 20, name: "Politics"),
-					WpCategory(id: 3340, name: "Sports"),
-					WpCategory(id: 22, name: "Texas"),
-					WpCategory(id: 18, name: "Transportation"),
-					WpCategory(id: 2232, name: "Weather"),
-					WpCategory(id: 5, name: "All Shows"),
-					WpCategory(id: 64721, name: "Hello Houston"),
-					WpCategory(id: 58, name: "Houston Matters"),
-					WpCategory(id: 11524, name: "Party Politics")
+					WpCategory(id: 3, name: "Arts & Culture", slug: "arts-culture"),
+					WpCategory(id: 2, name: "All News", slug: "news"),
+					WpCategory(id: 32566, name: "City of Houston", slug: "city-of-houston"),
+					WpCategory(id: 51718, name: "Courts", slug: "courts"),
+					WpCategory(id: 10, name: "Education", slug: "education"),
+					WpCategory(id: 14, name: "Energy & Environment", slug: "energy-environment"),
+					WpCategory(id: 58671, name: "Fort Bend", slug: "fort-bend"),
+					WpCategory(id: 32567, name: "Harris County", slug: "harris-county"),
+					WpCategory(id: 16, name: "Health & Science", slug: "health-science"),
+					WpCategory(id: 51851, name: "Housing", slug: "housing"),
+					WpCategory(id: 29328, name: "inDepth", slug: "indepth"),
+					WpCategory(id: 52248, name: "Infrastructure", slug: "infrastructure"),
+					WpCategory(id: 2113, name: "Local News", slug: "local"),
+					WpCategory(id: 20, name: "Politics", slug: "politics"),
+					WpCategory(id: 3340, name: "Sports", slug: "sports"),
+					WpCategory(id: 22, name: "Texas", slug: "texas"),
+					WpCategory(id: 18, name: "Transportation", slug: "transportation"),
+					WpCategory(id: 2232, name: "Weather", slug: "weather")
 				]
 				let selectedCategories = CategoryIds(categories: categories)
 				List {

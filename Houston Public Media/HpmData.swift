@@ -109,10 +109,17 @@ struct PriorityApiCall: Decodable {
 }
 struct PriorityArticleData: Decodable {
 	let articles: [PriorityArticle]
-	let breaking: String
+	let breaking: BreakingNews
 	let talkshow: String
+	let weather: HpmWeather
 }
-struct PriorityArticle: Identifiable, Decodable, Hashable {
+struct BreakingNews: Decodable {
+	let id: Int
+	let title: String
+	let type: String
+	let link: String
+}
+struct PriorityArticle: Identifiable, Decodable {
 	let id: Int
 	let title: String
 	let excerpt: String
@@ -120,6 +127,12 @@ struct PriorityArticle: Identifiable, Decodable, Hashable {
 	let permalink: String
 	let date: Date
 	let date_gmt: Date
+	let primary_category: WpCategory
+}
+struct HpmWeather: Decodable {
+	let icon: String
+	let description: String
+	let temperature: String
 }
 struct NowPlaying: Decodable {
 	let radio: [NowPlayingStation]
@@ -181,42 +194,44 @@ struct CoauthorMetadata: Decodable {
 struct WpCategory: Encodable, Equatable, Decodable {
 	let id: Int
 	let name: String
+	let slug: String
 }
 struct HpmCategories: Decodable {
 	var articles: [Int: [ArticleData]]
 }
 
 func UpdateStreams() async throws -> Streams {
-	let streams: Streams = try await session.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/streams.json")!)
+	let streams: Streams = try await URLSession.shared.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/streams.json")!)
 	return streams
 }
 func UpdatePodcasts() async throws -> PodcastList {
-	let podcasts: PodcastApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-podcast/v1/list")!)
+	let podcasts: PodcastApiCall = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-podcast/v1/list")!)
 	for podcast in podcasts.data.list {
 		await CachePodcastArtwork(url: podcast.image.medium.url, filename: podcast.name.convertedToSlug() + ".webp")
 	}
 	return podcasts.data
 }
 func UpdatePriorityArticles() async throws -> PriorityArticleData {
-	let priorityArticles: PriorityApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
+	//let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
+	let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/promos-test.json")!)
 	return priorityArticles.data
 }
 func UpdatePromos() async throws -> PromoData {
-	let newPromoData: PromosApiCall = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-promos/v1/list")!)
+	let newPromoData: PromosApiCall = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-promos/v1/list")!)
 	return newPromoData.data
 }
 func UpdateNowPlaying() async throws -> NowPlaying {
-	let nowPlaying: NowPlaying = try await session.decode(from: URL(string: "https://s3-us-west-2.amazonaws.com/hpmwebv2/assets/nowplay/all.json")!)
+	let nowPlaying: NowPlaying = try await URLSession.shared.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/nowplay/all.json")!)
 	return nowPlaying
 }
 func PullPodcastEpisodes(podcast: Podcast) async throws -> Podcast {
 	var podTemp = podcast
-	let download: PodcastDetailApiCall = try await session.decode(from: URL(string: podcast.feed_json)!)
+	let download: PodcastDetailApiCall = try await URLSession.shared.decode(from: URL(string: podcast.feed_json)!)
 	podTemp.episodelist = download.data.feed.items
 	return podTemp
 }
 func UpdateCategoryArticles(id: Int) async throws -> [ArticleData] {
-	let articles: [ArticleData] = try await session.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/?categories=\(id)&per_page=5")!)
+	let articles: [ArticleData] = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/wp/v2/posts/?categories=\(id)&per_page=5")!)
 	return articles
 }
 func CategoryIds(categories: [WpCategory]) -> [Int] {
@@ -296,7 +311,7 @@ func GetPodcastArtwork(filename: String) -> String? {
 		)
 	])
 	@Published var podcasts = PodcastList(list:[])
-	@Published var priorityData = PriorityArticleData(articles:[], breaking: "", talkshow: "")
+	@Published var priorityData = PriorityArticleData(articles:[], breaking: BreakingNews(id: 0, title: "", type: "", link: ""), talkshow: "hello-houston", weather: HpmWeather(icon: "", description: "", temperature: ""))
 	@Published var promos = PromoData(promos: [])
 	@Published var nowPlaying = NowPlaying(radio: [
 		NowPlayingStation(id: 0, name: "News 88.7", artist: "Houston Public Media News", title: "", album: "" ),
@@ -342,11 +357,3 @@ func GetPodcastArtwork(filename: String) -> String? {
 		}
 	}
 }
-
-let session: URLSession = {
-#if targetEnvironment(simulator)
-	return URLSession(configuration: .ephemeral)
-#else
-	return URLSession.shared
-#endif
-}()

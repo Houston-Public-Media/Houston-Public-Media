@@ -10,6 +10,8 @@ import MediaPlayer
 import SwiftUI
 
 //TODO: manage transition from foreground to background for streaming audio
+let timeScale = CMTimeScale(1000)
+let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
 
 final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutputPushDelegate {
 	@Published var itemTitle: String = ""
@@ -17,12 +19,32 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 	@Published var currentStation: Int = 0
 	@Published var audioType: AudioType = .stream
 	@Published var currentEpisode: PodcastEpisodePlayable? = nil
+	/// Display time that will be bound to the scrub slider.
+	@Published var displayTime: TimeInterval = 0
+
+	/// The observed time, which may not be needed by the UI.
+	@Published var observedTime: TimeInterval = 0
+
+	@Published var itemDuration: TimeInterval = 0
+	fileprivate var itemDurationKVOPublisher: AnyCancellable!
+
+	/// Publish timeControlStatus
+	@Published var timeControlStatus: AVPlayer.TimeControlStatus = .paused
+	fileprivate var timeControlStatusKVOPublisher: AnyCancellable!
+	fileprivate var periodicTimeObserver: Any?
+	
 	enum StateType {
 		case stopped, playing, paused
 	}
 	enum AudioType {
 		case stream, episode
 	}
+	enum PlayerScrubState {
+		case reset
+		case scrubStarted
+		case scrubEnded(TimeInterval)
+	}
+	
 	private var player: AVPlayer = AVPlayer()
 	private var session = AVAudioSession.sharedInstance()
 	
@@ -55,6 +77,9 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			artist = episode.podcastName
 			title = episode.episodeTitle
 			currentEpisode = episode
+			self.addPeriodicTimeObserver()
+			self.addTimeControlStatusObserver()
+			self.addItemDurationPublisher()
 		}
 		// activate our session before playing audio
 		activateSession()
@@ -110,30 +135,12 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		}
 		
 		commandCenter.skipForwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-			if self.player.rate != 0.0 {
-				let currentTime = self.player.currentTime()
-				let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
-				
-				let newTime = CMTimeAdd(currentTime, offset)
-				self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
-					self.updatePlaybackRateMetadata()
-				})
-				return .success
-			}
-			return .commandFailed
+			self.skipForward()
+			return .success
 		}
 		commandCenter.skipBackwardCommand.addTarget { (event) -> MPRemoteCommandHandlerStatus in
-			if self.player.rate != 0.0 {
-				let currentTime = self.player.currentTime()
-				let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
-				
-				let newTime = CMTimeSubtract(currentTime, offset)
-				self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
-					self.updatePlaybackRateMetadata()
-				})
-				return .success
-			}
-			return .commandFailed
+			self.skipBackward()
+			return .success
 		}
 		
 		var defaultArtwork = UIImage(named: "ListenLive_News 88.7")
@@ -173,6 +180,9 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		do {
 			try session.setActive(false, options: .notifyOthersOnDeactivation)
 			MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+			removePeriodicTimeObserver()
+			timeControlStatusKVOPublisher.cancel()
+			itemDurationKVOPublisher.cancel()
 		} catch let error as NSError {
 			print("Failed to deactivate audio session: \(error.localizedDescription)")
 		}
@@ -190,12 +200,32 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		self.player.replaceCurrentItem(with: nil)
 	}
 	
+	func skipForward() {
+		
+		let currentTime = self.player.currentTime()
+		let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
+		
+		let newTime = CMTimeAdd(currentTime, offset)
+		self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
+			self.updatePlaybackRateMetadata()
+		})
+	}
+	func skipBackward() {
+		let currentTime = self.player.currentTime()
+		let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
+		
+		let newTime = CMTimeSubtract(currentTime, offset)
+		self.player.seek(to: newTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (_) in
+			self.updatePlaybackRateMetadata()
+		})
+	}
+	
 	func getPlaybackDuration() -> Double {
 		return self.player.currentItem?.duration.seconds ?? 0
 	}
 	
 	func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], from track: AVPlayerItemTrack?) {
-		if groups.first?.items != nil {
+		if groups.first?.items != nil && groups.first?.items.count ?? 1 > 1 {
 			let item = groups.first?.items[1]
 			let song = (item?.value(forKeyPath: "value") ?? "") as! String
 			let songArr = song.components(separatedBy: "&")
@@ -217,8 +247,6 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 				self.itemTitle = outputArtist + " - " + outputTitle
 			}
 			updateMetadata(title: itemTitle)
-		} else {
-			self.itemTitle = "MetaData Error" // No Metadata or Could not read
 		}
 	}
 	
@@ -265,5 +293,70 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 			totalDuration += floatVal
 		}
 		return totalDuration
+	}
+	
+	var scrubState: PlayerScrubState = .reset {
+		didSet {
+			switch scrubState {
+			case .reset:
+				return
+			case .scrubStarted:
+				return
+			case .scrubEnded(let seekTime):
+				self.player.seek(to: CMTime(seconds: seekTime, preferredTimescale: 1000))
+			}
+		}
+	}
+	
+	fileprivate func addPeriodicTimeObserver() {
+		self.periodicTimeObserver = self.player.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
+			guard let self = self else { return }
+
+			// Always update observed time.
+			self.observedTime = time.seconds
+
+			switch self.scrubState {
+			case .reset:
+				self.displayTime = time.seconds
+			case .scrubStarted:
+				// When scrubbing, the displayTime is bound to the Slider view, so
+				// do not update it here.
+				break
+			case .scrubEnded(let seekTime):
+				self.scrubState = .reset
+				self.displayTime = seekTime
+			}
+		}
+	}
+
+	fileprivate func removePeriodicTimeObserver() {
+		guard let periodicTimeObserver = self.periodicTimeObserver else {
+			return
+		}
+		self.player.removeTimeObserver(periodicTimeObserver)
+		self.periodicTimeObserver = nil
+	}
+
+	fileprivate func addTimeControlStatusObserver() {
+		timeControlStatusKVOPublisher = self.player
+			.publisher(for: \.timeControlStatus)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveValue: { [weak self] (newStatus) in
+				guard let self = self else { return }
+				self.timeControlStatus = newStatus
+				}
+		)
+	}
+
+	fileprivate func addItemDurationPublisher() {
+		itemDurationKVOPublisher = self.player
+			.publisher(for: \.currentItem?.duration)
+			.receive(on: DispatchQueue.main)
+			.sink(receiveValue: { [weak self] (newStatus) in
+				guard let newStatus = newStatus,
+					let self = self else { return }
+				self.itemDuration = newStatus.seconds
+				}
+		)
 	}
 }

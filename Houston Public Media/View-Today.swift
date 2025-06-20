@@ -16,15 +16,19 @@ struct TodayView: View {
 	var categories: [WpCategory] = []
 	var body: some View {
 		List {
-			if !data.priorityData.breaking.isEmpty || !data.priorityData.talkshow.isEmpty {
-				if !data.priorityData.breaking.isEmpty {
-					Text(.init(data.priorityData.breaking.htmlToMarkDown()))
-						.font(.headline)
-						.foregroundStyle(Color("HPM White"))
-						.listRowBackground(Color("HPM Red"))
+			if data.priorityData.breaking.id != 0 || !data.priorityData.talkshow.isEmpty {
+				if data.priorityData.breaking.id != 0 {
+					Link(destination: URL(string: data.priorityData.breaking.link)!, label: {
+						Text(.init(data.priorityData.breaking.title.htmlToMarkDown()))
+							.font(.headline)
+							.foregroundStyle(Color("HPM White"))
+							.listRowBackground(Color("HPM Red"))
+					})
 				}
 				if !data.priorityData.talkshow.isEmpty {
-					TalkShowView(alert: data.priorityData.talkshow)
+					Section(header: Text("Talk Shows")) {
+						TalkShowView(alert: data.priorityData.talkshow)
+					}
 				}
 			}
 			Section(header: Text("Top Stories")) {
@@ -44,6 +48,11 @@ struct TodayView: View {
 									} placeholder: {
 										ProgressView()
 									}
+									Text(article.primary_category.name.uppercased().htmlUnescape())
+										.font(.system(size: 14, weight: .bold))
+										.foregroundColor(Color("AccentColor"))
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.padding(.horizontal, 8)
 									Link(destination: URL(string: article.permalink)!, label: {
 										Text(article.title)
 											.font(.system(size: 18, weight: .regular))
@@ -64,7 +73,7 @@ struct TodayView: View {
 									.padding(.bottom, 5)
 								}
 							}
-								.frame(width: 300, height: 325)
+								.frame(width: 300, height: 350)
 								.shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
 								.padding(.vertical, 10)
 								.padding(.horizontal, 3)
@@ -75,6 +84,9 @@ struct TodayView: View {
 				.padding(.horizontal, 0)
 				.headerProminence(.increased)
 				.listRowBackground(Color.clear)
+			Section(header: Text("Sponsored By")) {
+				GoogleBannerContentView()
+			}
 			if categories.isEmpty {
 				Button("Selected Categories in Settings Pane") {
 					selectedTab = 3

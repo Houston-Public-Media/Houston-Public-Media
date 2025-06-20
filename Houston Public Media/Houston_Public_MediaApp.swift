@@ -11,20 +11,12 @@ import TinyStorage
 @main
 struct Houston_Public_MediaApp: App {
 	@StateObject var hpmData = StationData()
-	@StateObject var launchScreenState = LaunchScreenStateManager()
 	@StateObject var audioManager = AudioManager()
 	
     var body: some Scene {
         WindowGroup {
-			ZStack {
-				ContentView()
-				if launchScreenState.state != .finished {
-					LaunchScreenView()
-				}
-				
-			}
+			ContentView()
 			.environmentObject(hpmData)
-			.environmentObject(launchScreenState)
 			.environmentObject(audioManager)
         }
     }
