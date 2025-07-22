@@ -168,6 +168,7 @@ struct ArticleData: Decodable {
 	let title: ArticleDataRendered
 	let excerpt: ArticleDataRendered
 	let featured_media_url: String
+	let primary_category: WpCategory
 }
 struct ArticleDataRendered: Decodable {
 	let rendered: String
@@ -212,8 +213,8 @@ func UpdatePodcasts() async throws -> PodcastList {
 	return podcasts.data
 }
 func UpdatePriorityArticles() async throws -> PriorityArticleData {
-	//let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
-	let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/promos-test.json")!)
+	let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list")!)
+	//let priorityArticles: PriorityApiCall = try await URLSession.shared.decode(from: URL(string: "https://cdn.houstonpublicmedia.org/assets/promos-test.json")!)
 	return priorityArticles.data
 }
 func UpdatePromos() async throws -> PromoData {
@@ -255,7 +256,7 @@ func CachePodcastArtwork(url: String, filename: String) async {
 				print("\(filename) is less than a day old")
 			}
 		}
-	
+
 	// here check if file already exists on simulator
 	if redownload {
 		do {
@@ -271,7 +272,7 @@ func CachePodcastArtwork(url: String, filename: String) async {
 func GetPodcastArtwork(filename: String) -> String? {
 	let fileManager: FileManager = FileManager.default
 	let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-	
+
 	let documentUrl = directory.appendingPathComponent(filename)
 	if fileManager.fileExists(atPath: (documentUrl.path)) {
 		return documentUrl.path
@@ -319,7 +320,7 @@ func GetPodcastArtwork(filename: String) -> String? {
 		NowPlayingStation(id: 2, name: "The Vibe from KTSU and HPM", artist: "The Vibe from KTSU and HPM", title: "", album: "" )
 	], tv: [])
 	@Published var categories = HpmCategories(articles: [:])
-	
+
 	func jsonPull() async {
 		do {
 			streams = try await UpdateStreams()
@@ -338,7 +339,7 @@ func GetPodcastArtwork(filename: String) -> String? {
 			print("Now Playing Pull failed with error \(error)")
 		}
 	}
-	
+
 	func podcastPull(index: Int) async {
 		do {
 			podcasts.list[index] = try await PullPodcastEpisodes(podcast: podcasts.list[index])
@@ -346,7 +347,7 @@ func GetPodcastArtwork(filename: String) -> String? {
 			print("Podcast episodes update failed with error \(error)")
 		}
 	}
-	
+
 	func updateCategories(list: [WpCategory]) async {
 		do {
 			for category in list {

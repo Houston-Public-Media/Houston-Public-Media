@@ -22,6 +22,7 @@ private struct GoogleBannerViewContainer: UIViewRepresentable {
 
 	init(_ adSize: AdSize) {
 		self.adSize = adSize
+		MobileAds.shared.requestConfiguration.testDeviceIdentifiers = [ "0fc3d49b2e5dd50f251a6c7204eeacab" ]
 		MobileAds.shared.start()
 	}
 

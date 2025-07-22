@@ -78,7 +78,7 @@ struct TalkShowView: View {
 		}
 			.padding(.horizontal, 8)
 			.padding(.vertical, 0)
-			.frame(width: UIScreen.main.bounds.size.width, height: 40)
+			.frame(height: 40)
 			.listRowBackground(Color(backgroundColor))
 	}
 }

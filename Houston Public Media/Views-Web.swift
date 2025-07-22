@@ -53,7 +53,7 @@ struct SFSafariView: UIViewControllerRepresentable {
 		let sfvc = SFSafariViewController(url: url)
 		sfvc.configuration.barCollapsingEnabled = false
 		sfvc.configuration.entersReaderIfAvailable = false
-		sfvc.preferredControlTintColor = UIColor(Color("HPM Blue Primary"))
+//		sfvc.preferredControlTintColor = UIColor(Color("HPM Blue Primary"))
 		sfvc.dismissButtonStyle = .close
 		sfvc.modalPresentationStyle = .pageSheet
 		return sfvc

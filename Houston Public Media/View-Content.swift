@@ -20,7 +20,9 @@ struct ContentView: View {
 					.frame(maxHeight: 36)
 				Spacer()
 				Link("Donate", destination: URL(string: "https://www.houstonpublicmedia.org/donate")!)
-					.foregroundColor(Color("HPM White"))
+					.buttonStyle(.borderedProminent)
+					.foregroundStyle(Color("HPM White"))
+					.tint(Color("HPM Red"))
 			}
 				.padding(.horizontal)
 			TabView(selection: $selectedTab) {

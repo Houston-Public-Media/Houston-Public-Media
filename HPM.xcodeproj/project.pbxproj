@@ -11,6 +11,7 @@
 		CB2468FA2DFB6B360090C027 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CB2468F92DFB6B360090C027 /* LaunchScreen.storyboard */; };
 		CB2468FE2DFB6F070090C027 /* HouPubMed.icon in Resources */ = {isa = PBXBuildFile; fileRef = CB2468FD2DFB6F070090C027 /* HouPubMed.icon */; };
 		CB40AD382D95AB50002D67DE /* HTMLEntities in Frameworks */ = {isa = PBXBuildFile; productRef = CB40AD372D95AB50002D67DE /* HTMLEntities */; };
+		CB4C53C22E302CB5006A6DD7 /* HPM.icon in Resources */ = {isa = PBXBuildFile; fileRef = CB4C53C12E302CB5006A6DD7 /* HPM.icon */; };
 		CB6E2DED2DA9D202005AA402 /* TinyStorage in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CBA381BF2DA8565D0005FFBD /* TinyStorage */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CBA381C02DA8565D0005FFBD /* TinyStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CBA381BF2DA8565D0005FFBD /* TinyStorage */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 /* Begin PBXFileReference section */
 		CB2468F92DFB6B360090C027 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CB2468FD2DFB6F070090C027 /* HouPubMed.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = HouPubMed.icon; sourceTree = "<group>"; };
+		CB4C53C12E302CB5006A6DD7 /* HPM.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = HPM.icon; sourceTree = "<group>"; };
 		CB6DC3712CE5471C00B4C174 /* HPM-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HPM-Info.plist"; sourceTree = "<group>"; };
 		CBA76A882CB5BCDF002D1EED /* HPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HPM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBA76A9B2CB5BCE0002D1EED /* HPMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HPMTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,6 +113,7 @@
 				CBA76A9E2CB5BCE0002D1EED /* Houston Public MediaTests */,
 				CBA76AA82CB5BCE0002D1EED /* Houston Public MediaUITests */,
 				CBA76A892CB5BCDF002D1EED /* Products */,
+				CB4C53C12E302CB5006A6DD7 /* HPM.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -253,6 +256,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB4C53C22E302CB5006A6DD7 /* HPM.icon in Resources */,
 				CB2468FE2DFB6F070090C027 /* HouPubMed.icon in Resources */,
 				CB2468FA2DFB6B360090C027 /* LaunchScreen.storyboard in Resources */,
 			);
@@ -437,14 +441,15 @@
 		CBA76AB02CB5BCE0002D1EED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = HouPubMed;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Houston Public Media/Houston_Public_Media.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Houston Public Media/Preview Content\"";
+				DEVELOPMENT_TEAM = 7CNNQ3255B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
@@ -468,7 +473,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
@@ -488,15 +493,16 @@
 		CBA76AB12CB5BCE0002D1EED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = HouPubMed;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Houston Public Media/Houston_Public_Media.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Houston Public Media/Preview Content\"";
+				DEVELOPMENT_TEAM = 7CNNQ3255B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
@@ -520,7 +526,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
