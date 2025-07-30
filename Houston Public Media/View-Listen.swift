@@ -19,6 +19,7 @@ struct ListenView: View {
 						Image("ListenLive_" + station.name)
 							.resizable()
 							.frame(width: 50, height: 50)
+							.cornerRadius(8)
 						VStack {
 							Text(station.name)
 								.font(.headline)
@@ -55,7 +56,7 @@ struct ListenView: View {
 					NavigationLink(destination: PodcastDetailView(data: _data, index: index)) {
 						HStack {
 							AsyncImage(url: URL(string: podcast.image.full.url)) { image in
-								image.resizable().cornerRadius(10)
+								image.resizable().cornerRadius(8)
 							} placeholder: {
 								ProgressView()
 							}

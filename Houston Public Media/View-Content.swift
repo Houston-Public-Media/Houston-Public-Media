@@ -64,14 +64,13 @@ struct ContentView: View {
 						}
 						.tag(3)
 				}
-				.toolbar {
-					if playback.state != .stopped {
-						ToolbarItem(placement: .bottomBar) {
-							AudioPlayerView(data: _hpmData, playback: _playback)
-						}
-					}
-				}
 			}
+			.tabViewBottomAccessory(content: {
+				if playback.state != .stopped {
+					AudioPlayerView(data: _hpmData, playback: _playback)
+				}
+			})
+			.tabBarMinimizeBehavior(.onScrollDown)
 		}
 			.task {
 				await hpmData.jsonPull()

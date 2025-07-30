@@ -18,7 +18,7 @@ struct PodcastDetailView: View {
 				if UIDevice.current.userInterfaceIdiom == .pad {
 					HStack(alignment: .top, spacing: 15) {
 						AsyncImage(url: URL(string: data.podcasts.list[index].image.full.url)) { image in
-							image.resizable().cornerRadius(10).aspectRatio(contentMode: .fit)
+							image.resizable().cornerRadius(8).aspectRatio(contentMode: .fit)
 						} placeholder: {
 							ProgressView()
 						}
@@ -80,7 +80,7 @@ struct PodcastDetailView: View {
 				} else {
 					VStack {
 						AsyncImage(url: URL(string: data.podcasts.list[index].image.full.url)) { image in
-							image.resizable().cornerRadius(10).aspectRatio(contentMode: .fit)
+							image.resizable().cornerRadius(8).aspectRatio(contentMode: .fit)
 						} placeholder: {
 							ProgressView()
 						}

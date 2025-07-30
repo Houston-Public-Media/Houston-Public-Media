@@ -28,7 +28,7 @@ struct AudioPlayerPopupView: View {
 				Image("ListenLive_" + data.streams.audio[playback.currentStation].name)
 					.resizable()
 					.aspectRatio(contentMode: .fit)
-					.cornerRadius(10)
+					.cornerRadius(8)
 					.padding(10)
 				Text(nowPlayingCleanup(nowPlaying: data.nowPlaying.radio[playback.currentStation]))
 					.font(.system(size: 20, weight: .regular))
@@ -46,7 +46,7 @@ struct AudioPlayerPopupView: View {
 					image
 						.resizable()
 						.aspectRatio(contentMode: .fit)
-						.cornerRadius(10)
+						.cornerRadius(8)
 						.padding(10)
 				} placeholder: {
 					ProgressView()
