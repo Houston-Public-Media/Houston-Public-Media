@@ -9,12 +9,10 @@ import Combine
 import MediaPlayer
 import SwiftUI
 
-//TODO: manage transition from foreground to background for streaming audio
 let timeScale = CMTimeScale(1000)
 let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
 
 final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutputPushDelegate {
-	@Published var itemTitle: String = ""
 	@Published var state: StateType = .stopped
 	@Published var currentStation: Int = 0
 	@Published var audioType: AudioType = .stream
@@ -170,12 +168,6 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 		MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
 	}
 	
-	func updateMetadata(title: String) {
-		var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo!
-		nowPlayingInfo[MPMediaItemPropertyTitle] = title
-		MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-	}
-	
 	func deactivateSession() {
 		do {
 			try session.setActive(false, options: .notifyOthersOnDeactivation)
@@ -201,7 +193,6 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 	}
 	
 	func skipForward() {
-		
 		let currentTime = self.player.currentTime()
 		let offset = CMTimeMakeWithSeconds(15, preferredTimescale: 1)
 		
@@ -225,29 +216,27 @@ final class AudioManager: NSObject, ObservableObject, AVPlayerItemMetadataOutput
 	}
 	
 	func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], from track: AVPlayerItemTrack?) {
-		if groups.first?.items != nil && groups.first?.items.count ?? 1 > 1 {
-			let item = groups.first?.items[1]
-			let song = (item?.value(forKeyPath: "value") ?? "") as! String
-			let songArr = song.components(separatedBy: "&")
-			var outputArtist = ""
-			var outputTitle = ""
-			for songInfo in songArr {
-				if songInfo != "" {
-					let songInfoArr = songInfo.components(separatedBy: "=")
-					if songInfoArr[0] == "artist" {
-						outputArtist = songInfoArr[1].removingPercentEncoding ?? ""
-					} else if songInfoArr[0] == "title" {
-						outputTitle = songInfoArr[1].removingPercentEncoding ?? ""
+		var outputArtist = ""
+		var outputTitle = ""
+		if groups.first?.items != nil {
+			for item in groups.first?.items ?? [] {
+				if item.commonKey != nil {
+					if item.commonKey == AVMetadataKey.commonKeyArtist {
+						outputArtist = (item.value(forKeyPath: "value") ?? "") as! String
+					} else if item.commonKey == AVMetadataKey.commonKeyTitle {
+						outputTitle = (item.value(forKeyPath: "value") ?? "") as! String
 					}
 				}
 			}
-			if outputArtist == "Houston Public Media News" {
-				self.itemTitle = outputTitle
-			} else {
-				self.itemTitle = outputArtist + " - " + outputTitle
-			}
-			updateMetadata(title: itemTitle)
+			updateMetadata(title: outputTitle, artist: outputArtist)
 		}
+	}
+	
+	func updateMetadata(title: String, artist: String) {
+		var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo!
+		nowPlayingInfo[MPMediaItemPropertyTitle] = title
+		nowPlayingInfo[MPMediaItemPropertyArtist] = artist
+		MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
 	}
 	
 	func updatePlaybackRateMetadata() {

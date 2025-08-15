@@ -312,7 +312,7 @@ func GetPodcastArtwork(filename: String) -> String? {
 		)
 	])
 	@Published var podcasts = PodcastList(list:[])
-	@Published var priorityData = PriorityArticleData(articles:[], breaking: BreakingNews(id: 0, title: "", type: "", link: ""), talkshow: "hello-houston", weather: HpmWeather(icon: "", description: "", temperature: ""))
+	@Published var priorityData = PriorityArticleData(articles:[], breaking: BreakingNews(id: 0, title: "", type: "", link: ""), talkshow: "", weather: HpmWeather(icon: "", description: "", temperature: ""))
 	@Published var promos = PromoData(promos: [])
 	@Published var nowPlaying = NowPlaying(radio: [
 		NowPlayingStation(id: 0, name: "News 88.7", artist: "Houston Public Media News", title: "", album: "" ),
