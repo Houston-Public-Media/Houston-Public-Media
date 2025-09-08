@@ -16,19 +16,17 @@ struct TodayView: View {
 	var categories: [WpCategory] = []
 	var body: some View {
 		List {
-			if data.priorityData.breaking.id != 0 || !data.priorityData.talkshow.isEmpty {
-				if data.priorityData.breaking.id != 0 {
-					Link(destination: URL(string: data.priorityData.breaking.link)!, label: {
-						Text(.init(data.priorityData.breaking.title.htmlToMarkDown()))
-							.font(.headline)
-							.foregroundStyle(Color("HPM White"))
-							.listRowBackground(Color("HPM Red"))
-					})
-				}
-				if !data.priorityData.talkshow.isEmpty {
-					Section(header: Text("Talk Shows")) {
-						TalkShowView(alert: data.priorityData.talkshow)
-					}
+			if data.priorityData.breaking.id != 0 {
+				Link(destination: URL(string: data.priorityData.breaking.link)!, label: {
+					Text(.init(data.priorityData.breaking.title.htmlToMarkDown()))
+						.font(.headline)
+						.foregroundStyle(Color("HPM White"))
+						.listRowBackground(Color("HPM Red"))
+				})
+			}
+			if data.priorityData.talkshow.houstonmatters.live == true || data.priorityData.talkshow.hellohouston.live == true {
+				Section(header: Text("Talk Shows")) {
+					TalkShowView(alert: data.priorityData.talkshow)
 				}
 			}
 			Section(header: Text("Top Stories")) {

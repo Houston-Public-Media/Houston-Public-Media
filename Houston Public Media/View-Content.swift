@@ -25,12 +25,32 @@ struct ContentView: View {
 					.tint(Color("HPM Red"))
 			}
 				.padding(.horizontal)
+			HStack {
+				Text(currentDate())
+					.font(.system(size: 11, weight: .bold))
+					.foregroundStyle(Color("HPM White"))
+				Spacer()
+				HStack {
+					Text(hpmData.priorityData.weather.temperature.htmlUnescape())
+						.font(.system(size: 11, weight: .bold))
+						.foregroundStyle(Color("HPM White"))
+					if hpmData.priorityData.weather.icon != "" {
+						AsyncImage(url: URL(string: hpmData.priorityData.weather.icon)!) { image in
+							image
+								.resizable()
+								.aspectRatio(contentMode: .fit)
+						} placeholder: {
+							ProgressView()
+						}
+						.frame(width: 15)
+					}
+				}
+			}
+				.padding(EdgeInsets(top: 4, leading: 12, bottom: 0, trailing: 12))
 			TabView(selection: $selectedTab) {
 				Group {
 					NavigationStack {
 						TodayView(data: _hpmData, playback: _playback, selectedTab: $selectedTab)
-							.navigationTitle("Today")
-							.navigationBarTitleDisplayMode(.inline)
 					}
 						.tabItem {
 							Label("Today", systemImage: "newspaper")
@@ -38,8 +58,6 @@ struct ContentView: View {
 						.tag(0)
 					NavigationStack {
 						ListenView(data: _hpmData, playback: _playback)
-							.navigationTitle("Listen")
-							.navigationBarTitleDisplayMode(.inline)
 					}
 						.tabItem {
 							Label("Listen", systemImage: "play.circle.fill")
@@ -47,8 +65,6 @@ struct ContentView: View {
 						.tag(1)
 					NavigationStack {
 						WatchView(data: _hpmData)
-							.navigationTitle("Watch")
-							.navigationBarTitleDisplayMode(.inline)
 					}
 						.tabItem {
 							Label("Watch", systemImage: "tv")
@@ -56,8 +72,6 @@ struct ContentView: View {
 						.tag(2)
 					NavigationStack {
 						SettingsView()
-							.navigationTitle("Settings")
-							.navigationBarTitleDisplayMode(.inline)
 					}
 						.tabItem {
 							Label("Settings", systemImage: "gear")
@@ -70,7 +84,7 @@ struct ContentView: View {
 					AudioPlayerView(data: _hpmData, playback: _playback)
 				}
 			})
-			.tabBarMinimizeBehavior(.onScrollDown)
+			.tabBarMinimizeBehavior(.never)
 		}
 			.task {
 				await hpmData.jsonPull()

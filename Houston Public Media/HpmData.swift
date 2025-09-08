@@ -110,8 +110,19 @@ struct PriorityApiCall: Decodable {
 struct PriorityArticleData: Decodable {
 	let articles: [PriorityArticle]
 	let breaking: BreakingNews
-	let talkshow: String
+	let talkshow: TalkShows
 	let weather: HpmWeather
+}
+struct TalkShows: Decodable {
+	let houstonmatters: TalkShowDetail
+	let hellohouston: TalkShowDetail
+}
+struct TalkShowDetail: Decodable {
+	let live: Bool
+	let id: String
+	let title: String
+	let embed: String
+	let description: String
 }
 struct BreakingNews: Decodable {
 	let id: Int
@@ -312,7 +323,15 @@ func GetPodcastArtwork(filename: String) -> String? {
 		)
 	])
 	@Published var podcasts = PodcastList(list:[])
-	@Published var priorityData = PriorityArticleData(articles:[], breaking: BreakingNews(id: 0, title: "", type: "", link: ""), talkshow: "", weather: HpmWeather(icon: "", description: "", temperature: ""))
+	@Published var priorityData = PriorityArticleData(
+		articles:[],
+		breaking: BreakingNews(id: 0, title: "", type: "", link: ""),
+		talkshow: TalkShows(
+			houstonmatters: TalkShowDetail(live: false, id: "", title: "", embed: "", description: ""),
+			hellohouston: TalkShowDetail(live: false, id: "", title: "", embed: "", description: "")
+		),
+		weather: HpmWeather(icon: "", description: "", temperature: "")
+	)
 	@Published var promos = PromoData(promos: [])
 	@Published var nowPlaying = NowPlaying(radio: [
 		NowPlayingStation(id: 0, name: "News 88.7", artist: "Houston Public Media News", title: "", album: "" ),

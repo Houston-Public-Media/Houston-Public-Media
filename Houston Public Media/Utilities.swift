@@ -206,3 +206,10 @@ func wpDateFormatter(date: Date?) -> String {
 
 	return dateFormatter.string(from: date)
 }
+
+func currentDate() -> String {
+	let dateFormatter = DateFormatter()
+	dateFormatter.dateFormat = "MMM d, yyyy"
+
+	return dateFormatter.string(from: Date())
+}

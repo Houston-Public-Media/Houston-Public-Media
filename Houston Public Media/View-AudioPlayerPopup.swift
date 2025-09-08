@@ -10,6 +10,7 @@ import SwiftUI
 struct AudioPlayerPopupView: View {
 	@EnvironmentObject var data: StationData
 	@EnvironmentObject var playback: AudioManager
+	@State var value :Double = 2.0
 	var body: some View {
 		VStack {
 			Capsule()
@@ -18,41 +19,43 @@ struct AudioPlayerPopupView: View {
 				.frame(width: 35, height: 5)
 				.padding(.horizontal, 6)
 				.padding(.top, 6)
-				.padding(.bottom, 20)
+				.padding(.bottom, 40)
 			if playback.audioType == .stream {
-				Text(data.streams.audio[playback.currentStation].name)
-					.font(.system(size: 16, weight: .semibold))
-					.frame(maxWidth: .infinity, alignment: .center)
-					.multilineTextAlignment(.center)
-					.padding(.horizontal, 10)
 				Image("ListenLive_" + data.streams.audio[playback.currentStation].name)
 					.resizable()
+					.frame(width: 300, height: 300)
 					.aspectRatio(contentMode: .fit)
 					.cornerRadius(8)
 					.padding(10)
+				Text(data.streams.audio[playback.currentStation].name)
+					.font(.system(size: 14, weight: .semibold))
+					.frame(maxWidth: .infinity, alignment: .center)
+					.multilineTextAlignment(.center)
+					.padding(.horizontal, 10)
 				Text(nowPlayingCleanup(nowPlaying: data.nowPlaying.radio[playback.currentStation]))
-					.font(.system(size: 20, weight: .regular))
+					.font(.system(size: 16, weight: .regular))
 					.frame(maxWidth: .infinity, alignment: .center)
 					.padding(.bottom, 10)
 					.padding(.horizontal, 10)
 					.multilineTextAlignment(.center)
 			} else {
-				Text(playback.currentEpisode?.podcastName ?? "")
-					.font(.system(size: 16, weight: .semibold))
-					.frame(maxWidth: .infinity, alignment: .center)
-					.multilineTextAlignment(.center)
-					.padding(.horizontal, 10)
 				AsyncImage(url: URL(string: playback.currentEpisode?.image.full.url ?? "")) { image in
 					image
 						.resizable()
+						.frame(width: 300, height: 300)
 						.aspectRatio(contentMode: .fit)
 						.cornerRadius(8)
 						.padding(10)
 				} placeholder: {
 					ProgressView()
 				}
+				Text(playback.currentEpisode?.podcastName ?? "")
+					.font(.system(size: 14, weight: .semibold))
+					.frame(maxWidth: .infinity, alignment: .center)
+					.multilineTextAlignment(.center)
+					.padding(.horizontal, 10)
 				Text(playback.currentEpisode?.episodeTitle ?? "")
-					.font(.system(size: 20, weight: .regular))
+					.font(.system(size: 16, weight: .regular))
 					.frame(maxWidth: .infinity, alignment: .center)
 					.padding(.bottom, 10)
 					.padding(.horizontal, 10)
@@ -64,10 +67,7 @@ struct AudioPlayerPopupView: View {
 			/// (0...self.player.duration) is not empty.
 			if playback.audioType != .stream {
 				if playback.itemDuration > 0 {
-					HStack {
-						Text(self.durationFormatter.string(from: playback.displayTime) ?? "")
-							.font(.system(size: 12, weight: .regular))
-							.monospaced()
+					VStack {
 						Slider(value: $playback.displayTime, in: (0...playback.itemDuration), onEditingChanged: {
 							(scrubStarted) in
 							if scrubStarted {
@@ -76,15 +76,27 @@ struct AudioPlayerPopupView: View {
 								playback.scrubState = .scrubEnded(playback.displayTime)
 							}
 						})
-						Text(self.durationFormatter.string(from: playback.itemDuration) ?? "")
-							.font(.system(size: 12, weight: .regular))
-							.monospaced()
+						HStack {
+							Text(self.durationFormatter.string(from: playback.displayTime) ?? "")
+								.font(.system(size: 12, weight: .regular))
+							Spacer()
+							Text(self.durationFormatter.string(from: playback.itemDuration) ?? "")
+								.font(.system(size: 12, weight: .regular))
+						}
 					}
-					.padding(10)
-				} else {
-					Text("Slider will appear here when the player is ready")
-						.font(.footnote)
+						.padding(10)
 				}
+			} else {
+				ZStack {
+					Text("Live")
+						.font(.system(size: 12, weight: .regular))
+						.padding(5)
+						.frame(width: 150, height: 24)
+					RoundedRectangle(cornerRadius: 8)
+						.frame(width: 350, height: 16)
+						.foregroundStyle(Color.secondary)
+				}
+				.padding(10)
 			}
 			HStack(spacing: 50) {
 				if playback.audioType == .episode {
@@ -94,8 +106,8 @@ struct AudioPlayerPopupView: View {
 					}, label: {
 						Image(systemName: "15.arrow.trianglehead.counterclockwise")
 							.resizable()
+							.frame(width: 40, height: 40)
 							.accessibilityLabel("Skip 15 seconds backward")
-							.frame(width: 35, height: 35)
 					})
 				}
 				if playback.state != .playing {
@@ -105,8 +117,8 @@ struct AudioPlayerPopupView: View {
 					}, label: {
 						Image(systemName: "play.fill")
 							.resizable()
-							.accessibilityLabel("Play")
 							.frame(width: 50, height: 50)
+							.accessibilityLabel("Play")
 					})
 				} else {
 					Button(action: {
@@ -126,7 +138,7 @@ struct AudioPlayerPopupView: View {
 					}, label: {
 						Image(systemName: "15.arrow.trianglehead.clockwise")
 							.resizable()
-							.frame(width: 35, height: 35)
+							.frame(width: 40, height: 40)
 							.accessibilityLabel("Skip 15 seconds forward")
 					})
 				}
